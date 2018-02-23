@@ -1,0 +1,2 @@
+# ElevatorThreads
+A project made by Bjarki Hrafn &amp; Leifur Pálsson. A program that controls elevators, each elevator in a separate thread, that accept and release people, each person in a separate thread, in such a way that it appears correctly in the graphical visualization and creates the people as instructed by the testSuite thread that is run automatically at the beginning of the program’s execution.
