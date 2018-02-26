@@ -25,6 +25,8 @@ public class ElevatorScene {
 	//There will be only one version of this running because it's static
 	//Pls cleanup after you new this !	
 	public static Semaphore globalSemaphore;
+	public static Semaphore personSemaphore;
+	public static Semaphore elevatorSemaphore;
 	//that also exists mutex instead for Semaphore
 	public static Semaphore personCountMutex;
 	public static Semaphore elevatorCountMutex;
@@ -82,6 +84,8 @@ public class ElevatorScene {
 		
 		scene = this;
 		globalSemaphore = new Semaphore(0);// <- the first one that calls wait will be stopped
+		personSemaphore = new Semaphore(0);
+		elevatorSemaphore = new Semaphore(0);
 		personCountMutex = new Semaphore(1);//<- the first one that calls wait gets through, which means: only one at a time
 		elevatorCountMutex = new Semaphore(1);
 		elevatorWaitMutex = new Semaphore(1);
@@ -183,7 +187,6 @@ public class ElevatorScene {
 	}
 	
 	public void incrementNumberOfPeopleInElevator(int floor) {
-		if(floor < 6) {
 			try {
 				ElevatorScene.elevatorCountMutex.acquire();
 					exitedCount.set(floor, (exitedCount.get(floor) +1));
@@ -191,8 +194,6 @@ public class ElevatorScene {
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			} 
-		}
-		
 	}
 
 	//Base function: definition must not change, but add your code

@@ -15,28 +15,30 @@ public class Person implements Runnable {
 		
 		try {
 			ElevatorScene.elevatorWaitMutex.acquire();
-				ElevatorScene.globalSemaphore.acquire(); //this is equivalent to a wait function
+				ElevatorScene.personSemaphore.acquire(); //this is equivalent to a wait function
 			ElevatorScene.elevatorWaitMutex.release();
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} 
 		// is now available
+		
 		ElevatorScene.scene.decrementNumberOfPeopleWaitingAtFloor(sourceFloor);
 		
 		System.out.println("Person thread released");
 		
 		try {
 			ElevatorScene.personWaitMutex.acquire();
-				//ElevatorScene.globalSemaphore.acquire();
+				ElevatorScene.elevatorSemaphore.acquire();
 			ElevatorScene.personWaitMutex.release();
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
-		System.out.println("Person added to elevator");
 		ElevatorScene.scene.incrementNumberOfPeopleInElevator(sourceFloor);
+		System.out.println("Person added to elevator");
+		
+		
 		
 		
 		

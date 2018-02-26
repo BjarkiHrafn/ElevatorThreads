@@ -10,7 +10,8 @@ public class Elevator implements Runnable {
 		}
 		System.out.println("Elevator.java");
 		for(int i = 0; i < 6; i++) {
-			ElevatorScene.globalSemaphore.release();// signal - Bjarki
+			ElevatorScene.personSemaphore.release();// signal - Bjarki
+			ElevatorScene.elevatorSemaphore.release();
 			//ElevatorScene.scene.getNumberOfPeopleInElevator(i);
 		}
 		
