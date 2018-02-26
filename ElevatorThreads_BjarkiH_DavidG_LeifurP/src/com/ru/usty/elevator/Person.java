@@ -28,13 +28,16 @@ public class Person implements Runnable {
 		
 		try {
 			ElevatorScene.personWaitMutex.acquire();
-				ElevatorScene.globalSemaphore.acquire();
+				//ElevatorScene.globalSemaphore.acquire();
 			ElevatorScene.personWaitMutex.release();
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		ElevatorScene.scene.decrementNumberOfPeopleInElevator(sourceFloor);
+		
+		System.out.println("Person added to elevator");
+		ElevatorScene.scene.incrementNumberOfPeopleInElevator(sourceFloor);
+		
 		
 		
 		

@@ -147,8 +147,8 @@ public class ElevatorScene {
 		 */
 
 		ElevatorScene.scene.incrementNumberOfPeopleWaitingAtFloor(sourceFloor);
-		ElevatorScene.scene.incrementNumberOfPeopleInElevator(sourceFloor);
-		
+	
+		 
 		return thread;  //this means that the testSuite will not wait for the threads to finish
 		//were returning the thread for the base system that will clean up after us - Bjarki
 	}
@@ -183,7 +183,7 @@ public class ElevatorScene {
 	}
 	
 	public void incrementNumberOfPeopleInElevator(int floor) {
-		if(floor != 6) {
+		if(floor < 6) {
 			try {
 				ElevatorScene.elevatorCountMutex.acquire();
 					exitedCount.set(floor, (exitedCount.get(floor) +1));
