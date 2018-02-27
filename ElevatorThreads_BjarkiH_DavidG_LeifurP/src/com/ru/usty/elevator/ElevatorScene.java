@@ -37,6 +37,7 @@ public class ElevatorScene {
 		public static Semaphore secondFloorOutSemaphore;
 		public static Semaphore elevaitorPersonCountMutex;
 		public static Semaphore elevatorWaitSemaphore;
+		public static Semaphore elevatorWaitSemaphore2;
 		
 		public static boolean elevatorsMayDie;
 		public static ElevatorScene scene;
@@ -108,6 +109,7 @@ public class ElevatorScene {
 		secondFloorOutSemaphore = new Semaphore(0);
 		elevaitorPersonCountMutex = new Semaphore(1);
 		elevatorWaitSemaphore = new Semaphore(0);
+		elevatorWaitSemaphore2 = new Semaphore(0);
 		
 		/**
 		 * ATTENTION
@@ -157,7 +159,7 @@ public class ElevatorScene {
 		}
 		
 		
-		elevatorThread = new Thread(new Elevator(0, 0));
+		elevatorThread = new Thread(new Elevator(1, 0));
 		elevatorThread.start();
 		/*elevatorThread = new Thread(new Runnable() {
 			

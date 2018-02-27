@@ -32,8 +32,15 @@ public class Person implements Runnable {
 				ElevatorScene.personCountInElevator.set(0, ElevatorScene.personCountInElevator.get(0)+1);
 				System.out.println("people in elevator: " + ElevatorScene.scene.getNumberOfPeopleInElevator(0));
 				
+				try {
+					Thread.sleep(500);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				
 				// check if people are waiting or if elevator is full
-				if(ElevatorScene.personCountInElevator.get(0) == 6 /* or floor is empty*/) {
+				if(ElevatorScene.personCountInElevator.get(0) == 6 || ElevatorScene.scene.getNumberOfPeopleWaitingAtFloor(0) == 0) {
 					// unlock a semaphore for elevator
 					ElevatorScene.elevatorWaitSemaphore.release();
 				}
@@ -56,6 +63,17 @@ public class Person implements Runnable {
 				ElevatorScene.personCountInElevator.set(0, ElevatorScene.personCountInElevator.get(0)-1);
 				System.out.println("people in elevator" + ElevatorScene.personCountInElevator.get(0));
 				ElevatorScene.scene.personExitsAtFloor(1);
+				
+				try {
+					Thread.sleep(500);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				
+				if(ElevatorScene.personCountInElevator.get(0) == 0) {
+					ElevatorScene.elevatorWaitSemaphore2.release();
+				}
 			ElevatorScene.elevaitorPersonCountMutex.release();
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
