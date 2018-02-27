@@ -33,7 +33,7 @@ public class Person implements Runnable {
 				System.out.println("people in elevator: " + ElevatorScene.scene.getNumberOfPeopleInElevator(0));
 				
 				// check if people are waiting or if elevator is full
-				if(ElevatorScene.personCountInElevator.get(0) == 16 /* or floor is empty*/) {
+				if(ElevatorScene.personCountInElevator.get(0) == 6 /* or floor is empty*/) {
 					// unlock a semaphore for elevator
 					ElevatorScene.elevatorWaitSemaphore.release();
 				}
