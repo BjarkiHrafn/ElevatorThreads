@@ -15,17 +15,52 @@ public class Person implements Runnable {
 		
 		try {
 			ElevatorScene.elevatorWaitMutex.acquire();
-			 ElevatorScene.globalSemaphore.acquire(); //this is equivalent to a wait function
-			ElevatorScene.elevatorWaitMutex.acquire();
+				ElevatorScene.firstFloorInSemaphore.acquire(); //this is equivalent to a wait function
+			ElevatorScene.elevatorWaitMutex.release();
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} 
 		// is now available
-		ElevatorScene.scene.decrementNumberOfPeopleWaitingAtFloor(sourceFloor);
-		System.out.println("Person thread released");
 		
+		try {
+			ElevatorScene.elevaitorPersonCountMutex.acquire();
+				// decrement people waiting at floor
+				ElevatorScene.scene.decrementNumberOfPeopleWaitingAtFloor(sourceFloor);
+				System.out.println("Person thread released into elevator");
+				// increment people in elevator
+				ElevatorScene.personCountInElevator.set(0, ElevatorScene.personCountInElevator.get(0)+1);
+				System.out.println("people in elevator: " + ElevatorScene.scene.getNumberOfPeopleInElevator(0));
+				
+				// check if people are waiting or if elevator is full
+				if(ElevatorScene.personCountInElevator.get(0) == 16 /* or floor is empty*/) {
+					// unlock a semaphore for elevator
+					ElevatorScene.elevatorWaitSemaphore.release();
+				}
+				
+			ElevatorScene.elevaitorPersonCountMutex.release();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} 
 		
+		try {
+			ElevatorScene.secondFloorOutSemaphore.acquire();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		try {
+			ElevatorScene.elevaitorPersonCountMutex.acquire();
+				ElevatorScene.personCountInElevator.set(0, ElevatorScene.personCountInElevator.get(0)-1);
+				System.out.println("people in elevator" + ElevatorScene.personCountInElevator.get(0));
+				ElevatorScene.scene.personExitsAtFloor(1);
+			ElevatorScene.elevaitorPersonCountMutex.release();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 }
