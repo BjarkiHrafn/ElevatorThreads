@@ -51,6 +51,16 @@ public class Person implements Runnable {
 			e.printStackTrace();
 		} 
 		
+		/*
+		try {
+			ElevatorScene.outOfElevatorFloorsSem.get(destinationFloor).acquire();
+		} catch (InterruptedException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		*/
+		
+		
 		try {
 			ElevatorScene.secondFloorOutSemaphore.acquire();
 		} catch (InterruptedException e) {
@@ -58,11 +68,12 @@ public class Person implements Runnable {
 			e.printStackTrace();
 		}
 		
+		
 		try {
 			ElevatorScene.elevaitorPersonCountMutex.acquire();
 				ElevatorScene.personCountInElevator.set(0, ElevatorScene.personCountInElevator.get(0)-1);
 				System.out.println("people in elevator" + ElevatorScene.personCountInElevator.get(0));
-				ElevatorScene.scene.personExitsAtFloor(1);
+				ElevatorScene.scene.personExitsAtFloor(1); // exits at destination floor add parameter
 				
 				try {
 					Thread.sleep(500);

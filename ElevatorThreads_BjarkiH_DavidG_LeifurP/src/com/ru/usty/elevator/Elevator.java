@@ -1,5 +1,7 @@
 package com.ru.usty.elevator;
 
+import java.util.concurrent.Semaphore;
+
 public class Elevator implements Runnable {
 
 	int CurrentFloorForElevator, NumberOfPeopleInElevator;
@@ -43,6 +45,11 @@ public class Elevator implements Runnable {
 			System.out.println(ElevatorScene.personCountInElevator.get(0));
 			ElevatorScene.secondFloorOutSemaphore.release(ElevatorScene.personCountInElevator.get(0));
 			
+			/*
+			for(Semaphore floorWait :  ElevatorScene.outOfElevatorFloorsSem) {
+                floorWait.release();
+			}
+			*/
 			
 			try {
 				ElevatorScene.elevatorWaitSemaphore2.acquire();
