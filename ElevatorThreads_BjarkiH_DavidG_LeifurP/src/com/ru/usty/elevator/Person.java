@@ -14,12 +14,10 @@ public class Person implements Runnable {
 	public void run() {
 		
 		try {
-			ElevatorScene.elevatorWaitMutex.acquire();
-				//ElevatorScene.firstFloorInSemaphore.acquire(); //this is equivalent to a wait function
+			ElevatorScene.elevatorWaitMutexArr.get(sourceFloor).acquire();
 				ElevatorScene.inToElevatorFloorsSem.get(sourceFloor).acquire();
-			ElevatorScene.elevatorWaitMutex.release();
+			ElevatorScene.elevatorWaitMutexArr.get(sourceFloor).release();
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} 
 		// is now available
@@ -35,14 +33,6 @@ public class Person implements Runnable {
 				// increment people in elevator
 				ElevatorScene.personCountInElevator.set(0, ElevatorScene.personCountInElevator.get(0)+1);
 				System.out.println("people in elevator: " + ElevatorScene.scene.getNumberOfPeopleInElevator(0));
-				
-				
-				// check if people are waiting or if elevator is full
-				if(ElevatorScene.personCountInElevator.get(0) == 6 || ElevatorScene.scene.getNumberOfPeopleWaitingAtFloor(0) == 0) {
-					// unlock a semaphore for elevator
-					ElevatorScene.elevatorWaitSemaphore.release();
-				}
-				
 			ElevatorScene.elevaitorPersonCountMutex.release();
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
@@ -51,25 +41,11 @@ public class Person implements Runnable {
 		// ----
 		
 		
-		
-		
 		try {
 			ElevatorScene.outOfElevatorFloorsSem.get(destinationFloor).acquire();
 		} catch (InterruptedException e1) {
-			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
-		
-		
-		
-		/*
-		try {
-			ElevatorScene.secondFloorOutSemaphore.acquire();
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		*/
 		
 		
 		// People leaving elevator, mutex used to go in one by one
@@ -80,17 +56,8 @@ public class Person implements Runnable {
 				System.out.println("people in elevator" + ElevatorScene.personCountInElevator.get(0));
 				System.out.println("destination floor: " + destinationFloor);
 				ElevatorScene.scene.personExitsAtFloor(destinationFloor); // exits at destination floor add parameter
-				
-				
-				
-				if(ElevatorScene.personCountInElevator.get(0) == 0) {
-					ElevatorScene.elevatorWaitSemaphore2.release();
-				}
-				
-				
 			ElevatorScene.elevaitorPersonCountMutex.release();
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		// ----
