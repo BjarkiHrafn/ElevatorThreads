@@ -29,6 +29,7 @@ public class ElevatorScene {
 	public static Semaphore personCountMutex;
 	
 	public static Semaphore elevatorWaitMutex;
+	static ArrayList<Semaphore> elevatorWaitMutexArr = null;
 	
 	
 	// Leifur SemaPhores
@@ -175,31 +176,16 @@ public class ElevatorScene {
 			inToElevatorFloorsSem.add(new Semaphore(0));
 		}
 		
+		elevatorWaitMutexArr = new ArrayList<Semaphore>();
+		for(int i = 0; i < getNumberOfFloors(); i++) {
+			elevatorWaitMutexArr.add(new Semaphore(1));
+		}
 		
+
+		// Start Elevator threads
 		elevatorThread = new Thread(new Elevator(1, 0));
 		elevatorThread.start();
-		/*elevatorThread = new Thread(new Runnable() {
-			
-			
-			@Override
-			public void run() {
-				
-				if(ElevatorScene.elevatorsMayDie) {
-					return; // this stops the program from running for an infinite time - Bjarki
-				}
-				
-				for(int i = 0; i < 6; i++) {
-					ElevatorScene.firstFloorInSemaphore.release();// signal - Bjarki
-					personCountInElevator.set(0, i+1);
-					System.out.println("person added to elevator");
-					
-				}
-				
-				
-			}
-			
-		});
-		elevatorThread.start();*/
+
 	}
 	
 	
