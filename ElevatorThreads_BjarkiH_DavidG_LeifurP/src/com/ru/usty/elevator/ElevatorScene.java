@@ -41,7 +41,10 @@ public class ElevatorScene {
 		
 		public static boolean elevatorsMayDie;
 		public static ElevatorScene scene;
-	
+		
+	// Davíð SemaPhore
+	static ArrayList<Semaphore> outOfElevatorFloorsSem = null;
+	static ArrayList<Semaphore> inToElevatorFloorsSem = null;
 	
 	//------Semaphores------//
 	
@@ -71,7 +74,7 @@ public class ElevatorScene {
 	//------Elevators------//
 	static ArrayList<Integer> elevatorsFloor = null;
 	static ArrayList<Integer> personCountInElevator = null;
-	static ArrayList<Semaphore> outOfElevatorFloorsSem = null;
+	
 	//ArrayList<Elevator> elevators = null;
 	
 	public static Semaphore exitedCountMutex;
@@ -167,6 +170,11 @@ public class ElevatorScene {
 			outOfElevatorFloorsSem.add(new Semaphore(0));
 		}
 		
+		inToElevatorFloorsSem = new ArrayList<Semaphore>();
+		for(int i = 0; i < getNumberOfFloors(); i++) {
+			inToElevatorFloorsSem.add(new Semaphore(0));
+		}
+		
 		
 		elevatorThread = new Thread(new Elevator(1, 0));
 		elevatorThread.start();
@@ -238,7 +246,7 @@ public class ElevatorScene {
             	elevatorsFloor.set(elevator, (elevatorsFloor.get(elevator) - 1));
     }
     
-    // decrements current elevator by 1 floor -DavidG
+    // set elevator floor to 0 -DavidG
     public void currentElevatorToFirstFloor(int elevator) {
             	elevatorsFloor.set(elevator, 0);
     }

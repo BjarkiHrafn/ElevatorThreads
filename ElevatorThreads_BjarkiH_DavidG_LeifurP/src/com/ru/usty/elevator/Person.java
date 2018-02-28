@@ -15,7 +15,8 @@ public class Person implements Runnable {
 		
 		try {
 			ElevatorScene.elevatorWaitMutex.acquire();
-				ElevatorScene.firstFloorInSemaphore.acquire(); //this is equivalent to a wait function
+				//ElevatorScene.firstFloorInSemaphore.acquire(); //this is equivalent to a wait function
+				ElevatorScene.inToElevatorFloorsSem.get(sourceFloor).acquire();
 			ElevatorScene.elevatorWaitMutex.release();
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
@@ -77,6 +78,7 @@ public class Person implements Runnable {
 			ElevatorScene.elevaitorPersonCountMutex.acquire();
 				ElevatorScene.personCountInElevator.set(0, ElevatorScene.personCountInElevator.get(0)-1);
 				System.out.println("people in elevator" + ElevatorScene.personCountInElevator.get(0));
+				System.out.println("destination floor: " + destinationFloor);
 				ElevatorScene.scene.personExitsAtFloor(destinationFloor); // exits at destination floor add parameter
 				
 				
