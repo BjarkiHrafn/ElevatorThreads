@@ -53,7 +53,8 @@ public class ElevatorScene {
 	//TO SPEED THINGS UP WHEN TESTING,
 	//feel free to change this.  It will be changed during grading
 	// ekki fyrir nedan 50 milliseconds -Bjarki
-	public static final int VISUALIZATION_WAIT_TIME = 500;  //milliseconds
+	public static final int VISUALIZATION_WAIT_TIME = 2000;  //milliseconds
+	
 
 	private int numberOfFloors;
 	private int numberOfElevators;
@@ -235,6 +236,11 @@ public class ElevatorScene {
     public void decrementCurrentElevatorFloor(int elevator) {
             if(elevatorsFloor.get(elevator) >= 0)
             	elevatorsFloor.set(elevator, (elevatorsFloor.get(elevator) - 1));
+    }
+    
+    // decrements current elevator by 1 floor -DavidG
+    public void currentElevatorToFirstFloor(int elevator) {
+            	elevatorsFloor.set(elevator, 0);
     }
 
 	//Base function: definition must not change, but add your code

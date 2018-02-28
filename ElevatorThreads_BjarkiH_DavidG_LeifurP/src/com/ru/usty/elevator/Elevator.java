@@ -5,6 +5,7 @@ import java.util.concurrent.Semaphore;
 public class Elevator implements Runnable {
 
 	int CurrentFloorForElevator, NumberOfPeopleInElevator;
+	static final int SLEEP_TIME = ElevatorScene.VISUALIZATION_WAIT_TIME / 2;
 	
 	public Elevator(int CurrentFloorForElevator, int NumberOfPeopleInElevator) {
 		this.CurrentFloorForElevator = CurrentFloorForElevator;
@@ -32,25 +33,43 @@ public class Elevator implements Runnable {
 				e.printStackTrace();
 			}
 			
-			try {
-				Thread.sleep(500);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
 			
-			// move elevator to second floor
-			ElevatorScene.incrementCurrentElevatorFloor(0);
-			// release people from elevator
-			System.out.println(ElevatorScene.personCountInElevator.get(0));
-			ElevatorScene.secondFloorOutSemaphore.release(ElevatorScene.personCountInElevator.get(0));
 			
 			/*
-			for(Semaphore floorWait :  ElevatorScene.outOfElevatorFloorsSem) {
-                floorWait.release();
+			try {
+				Thread.sleep(SLEEP_TIME);
+				ElevatorScene.firstFloorInSemaphore.acquire(ElevatorScene.scene.getNumberOfPeopleInElevator(0));
+			} catch (InterruptedException e1) {
+				e1.printStackTrace();
 			}
 			*/
 			
+			
+			
+			
+			// move elevator to next floor
+			if(ElevatorScene.scene.getCurrentFloorForElevator(0) < ElevatorScene.scene.getNumberOfFloors()) {
+				System.out.println("now I can go to next floor");
+				System.out.println("Current floor" + ElevatorScene.scene.getCurrentFloorForElevator(0));
+				ElevatorScene.incrementCurrentElevatorFloor(0);
+				ElevatorScene.outOfElevatorFloorsSem.get(ElevatorScene.scene.getCurrentFloorForElevator(0)).release();
+			}else {
+				System.out.println("now I can go to ground floor");
+				ElevatorScene.scene.currentElevatorToFirstFloor(0);
+			}
+			
+			
+			// release people from elevator
+			System.out.println(ElevatorScene.personCountInElevator.get(0));
+			//ElevatorScene.secondFloorOutSemaphore.release(ElevatorScene.personCountInElevator.get(0));
+			
+			try {
+				Thread.sleep(SLEEP_TIME);
+			} catch (InterruptedException e1) {
+				e1.printStackTrace();
+			}
+			
+			/*
 			try {
 				ElevatorScene.elevatorWaitSemaphore2.acquire();
 				System.out.println("now I can go to floor 1");
@@ -59,15 +78,17 @@ public class Elevator implements Runnable {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+			*/
 			
-			try {
-				Thread.sleep(500);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
 			
-			ElevatorScene.scene.decrementCurrentElevatorFloor(0);
+
 		}
 	}
 }
+
+
+/*
+for(Semaphore floorWait :  ElevatorScene.outOfElevatorFloorsSem) {
+    floorWait.release();
+}
+*/
