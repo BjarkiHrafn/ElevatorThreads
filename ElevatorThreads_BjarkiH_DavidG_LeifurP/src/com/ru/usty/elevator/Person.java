@@ -15,7 +15,8 @@ public class Person implements Runnable {
 		
 		try {
 			ElevatorScene.elevatorWaitMutex.acquire();
-				ElevatorScene.firstFloorInSemaphore.acquire(); //this is equivalent to a wait function
+				//ElevatorScene.firstFloorInSemaphore.acquire(); //this is equivalent to a wait function
+				ElevatorScene.inToElevatorFloorsSem.get(sourceFloor).acquire();
 			ElevatorScene.elevatorWaitMutex.release();
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
@@ -23,6 +24,9 @@ public class Person implements Runnable {
 		} 
 		// is now available
 		
+		
+		// People going into elevator, mutex used to go in one by one
+		// ----
 		try {
 			ElevatorScene.elevaitorPersonCountMutex.acquire();
 				// decrement people waiting at floor
@@ -32,12 +36,6 @@ public class Person implements Runnable {
 				ElevatorScene.personCountInElevator.set(0, ElevatorScene.personCountInElevator.get(0)+1);
 				System.out.println("people in elevator: " + ElevatorScene.scene.getNumberOfPeopleInElevator(0));
 				
-				try {
-					Thread.sleep(500);
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
 				
 				// check if people are waiting or if elevator is full
 				if(ElevatorScene.personCountInElevator.get(0) == 6 || ElevatorScene.scene.getNumberOfPeopleWaitingAtFloor(0) == 0) {
@@ -49,47 +47,53 @@ public class Person implements Runnable {
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		} 
+		}
+		// ----
 		
-		/*
+		
+		
+		
 		try {
 			ElevatorScene.outOfElevatorFloorsSem.get(destinationFloor).acquire();
 		} catch (InterruptedException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
-		*/
 		
 		
+		
+		/*
 		try {
 			ElevatorScene.secondFloorOutSemaphore.acquire();
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		*/
 		
 		
+		// People leaving elevator, mutex used to go in one by one
+		// ----
 		try {
 			ElevatorScene.elevaitorPersonCountMutex.acquire();
 				ElevatorScene.personCountInElevator.set(0, ElevatorScene.personCountInElevator.get(0)-1);
 				System.out.println("people in elevator" + ElevatorScene.personCountInElevator.get(0));
-				ElevatorScene.scene.personExitsAtFloor(1); // exits at destination floor add parameter
+				System.out.println("destination floor: " + destinationFloor);
+				ElevatorScene.scene.personExitsAtFloor(destinationFloor); // exits at destination floor add parameter
 				
-				try {
-					Thread.sleep(500);
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+				
 				
 				if(ElevatorScene.personCountInElevator.get(0) == 0) {
 					ElevatorScene.elevatorWaitSemaphore2.release();
 				}
+				
+				
 			ElevatorScene.elevaitorPersonCountMutex.release();
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		// ----
 	}
 
 }

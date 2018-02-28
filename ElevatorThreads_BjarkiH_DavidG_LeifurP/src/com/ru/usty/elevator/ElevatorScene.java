@@ -41,7 +41,10 @@ public class ElevatorScene {
 		
 		public static boolean elevatorsMayDie;
 		public static ElevatorScene scene;
-	
+		
+	// Davíð SemaPhore
+	static ArrayList<Semaphore> outOfElevatorFloorsSem = null;
+	static ArrayList<Semaphore> inToElevatorFloorsSem = null;
 	
 	//------Semaphores------//
 	
@@ -53,7 +56,8 @@ public class ElevatorScene {
 	//TO SPEED THINGS UP WHEN TESTING,
 	//feel free to change this.  It will be changed during grading
 	// ekki fyrir nedan 50 milliseconds -Bjarki
-	public static final int VISUALIZATION_WAIT_TIME = 500;  //milliseconds
+	public static final int VISUALIZATION_WAIT_TIME = 2000;  //milliseconds
+	
 
 	private int numberOfFloors;
 	private int numberOfElevators;
@@ -70,7 +74,7 @@ public class ElevatorScene {
 	//------Elevators------//
 	static ArrayList<Integer> elevatorsFloor = null;
 	static ArrayList<Integer> personCountInElevator = null;
-	static ArrayList<Semaphore> outOfElevatorFloorsSem = null;
+	
 	//ArrayList<Elevator> elevators = null;
 	
 	public static Semaphore exitedCountMutex;
@@ -166,6 +170,11 @@ public class ElevatorScene {
 			outOfElevatorFloorsSem.add(new Semaphore(0));
 		}
 		
+		inToElevatorFloorsSem = new ArrayList<Semaphore>();
+		for(int i = 0; i < getNumberOfFloors(); i++) {
+			inToElevatorFloorsSem.add(new Semaphore(0));
+		}
+		
 		
 		elevatorThread = new Thread(new Elevator(1, 0));
 		elevatorThread.start();
@@ -235,6 +244,11 @@ public class ElevatorScene {
     public void decrementCurrentElevatorFloor(int elevator) {
             if(elevatorsFloor.get(elevator) >= 0)
             	elevatorsFloor.set(elevator, (elevatorsFloor.get(elevator) - 1));
+    }
+    
+    // set elevator floor to 0 -DavidG
+    public void currentElevatorToFirstFloor(int elevator) {
+            	elevatorsFloor.set(elevator, 0);
     }
 
 	//Base function: definition must not change, but add your code
