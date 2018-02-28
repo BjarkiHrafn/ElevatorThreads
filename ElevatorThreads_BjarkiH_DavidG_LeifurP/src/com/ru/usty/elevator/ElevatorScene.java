@@ -65,9 +65,12 @@ public class ElevatorScene {
 	ArrayList<Integer> exitedCount = null;
 	
 	
+	
+	
 	//------Elevators------//
 	static ArrayList<Integer> elevatorsFloor = null;
 	static ArrayList<Integer> personCountInElevator = null;
+	static ArrayList<Semaphore> outOfElevatorFloorsSem = null;
 	//ArrayList<Elevator> elevators = null;
 	
 	public static Semaphore exitedCountMutex;
@@ -156,6 +159,11 @@ public class ElevatorScene {
 		personCountInElevator = new ArrayList<Integer>();
 		for(int i = 0; i < getNumberOfElevators(); i++) {
 			personCountInElevator.add(0);
+		}
+		
+		outOfElevatorFloorsSem = new ArrayList<Semaphore>();
+		for(int i = 0; i < getNumberOfFloors(); i++) {
+			outOfElevatorFloorsSem.add(new Semaphore(0));
 		}
 		
 		
