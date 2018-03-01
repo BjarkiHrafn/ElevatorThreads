@@ -24,12 +24,16 @@ public class Person implements Runnable {
 			e.printStackTrace();
 		} 
 		
+		int myElevator = ElevatorScene.currElevatorAtFloor;
+		ElevatorScene.scene.decrementNumberOfPeopleWaitingAtFloor(sourceFloor);
+		ElevatorScene.personCountInElevator.set(myElevator, ElevatorScene.personCountInElevator.get(myElevator)+1);
 		
+		/*
 		// People going into elevator, mutex used to go in one by one
 		// ----
-		final int myElevator = ElevatorScene.currElevatorAtFloor;;
 		try {
-			ElevatorScene.elevaitorPersonCountMutex.acquire();
+			//ElevatorScene.elevaitorPersonCountMutex.acquire();
+			ElevatorScene.elevaitorPersonCountMutexArr.get(myElevator).acquire();
 				// create int here 
 				// decrement people waiting at floor
 				ElevatorScene.scene.decrementNumberOfPeopleWaitingAtFloor(sourceFloor);
@@ -37,33 +41,40 @@ public class Person implements Runnable {
 				// increment people in elevator
 				ElevatorScene.personCountInElevator.set(myElevator, ElevatorScene.personCountInElevator.get(myElevator)+1);
 				System.out.println("people in elevator: " + ElevatorScene.scene.getNumberOfPeopleInElevator(myElevator));
-			ElevatorScene.elevaitorPersonCountMutex.release();
+			//ElevatorScene.elevaitorPersonCountMutex.release();
+			ElevatorScene.elevaitorPersonCountMutexArr.get(myElevator).release();
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
+		}*/
 		// ----
 		
 		
 		try {
-			ElevatorScene.outOfElevatorFloorsSem.get(destinationFloor).acquire();
+			//ElevatorScene.outOfElevatorFloorsSem.get(destinationFloor).acquire();
+			ElevatorScene.outOfElevatorFloorsSemTwoDemArr.get(myElevator).get(destinationFloor).acquire();
 		} catch (InterruptedException e1) {
 			e1.printStackTrace();
 		}
 		
 		
+		ElevatorScene.personCountInElevator.set(myElevator, ElevatorScene.personCountInElevator.get(myElevator)-1);
+		ElevatorScene.scene.personExitsAtFloor(destinationFloor); // exits at destination floor add parameter
+
+		/*
 		// People leaving elevator, mutex used to go in one by one
 		// ----
 		try {
-			ElevatorScene.elevaitorPersonCountMutex2.acquire();
+			ElevatorScene.elevatorWaitMutexArr2.get(myElevator).acquire();
+			//ElevatorScene.elevaitorPersonCountMutex2.acquire();
 				ElevatorScene.personCountInElevator.set(myElevator, ElevatorScene.personCountInElevator.get(myElevator)-1);
 				System.out.println("people in elevator" + ElevatorScene.personCountInElevator.get(myElevator));
 				System.out.println("destination floor: " + destinationFloor);
 				ElevatorScene.scene.personExitsAtFloor(destinationFloor); // exits at destination floor add parameter
-			ElevatorScene.elevaitorPersonCountMutex2.release();
+			//ElevatorScene.elevaitorPersonCountMutex2.release();
+			ElevatorScene.elevatorWaitMutexArr2.get(myElevator).release();
 		} catch (InterruptedException e) {
 			e.printStackTrace();
-		}
+		}*/
 		// ----
 	}
 
