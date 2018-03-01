@@ -10,17 +10,20 @@ public class ElevatorMainProgram {
 			TestSuite.startVisualization();
 
 /***EXPERIMENT HERE BUT THIS WILL BE CHANGED DURING GRADING***/
-
+			
+			/*
 			Thread.sleep(1000);
-
-			TestSuite.runTest(3);
-
+			TestSuite.runTest(8);
 			Thread.sleep(2000);
-
-		//	for(int i = 0; i <= 9; i++) {
-		//		TestSuite.runTest(i);
-		//		Thread.sleep(2000);
-		//	}
+			*/
+			
+			
+			for(int i = 4; i <= 9; i++) {
+				TestSuite.runTest(i);
+				Thread.sleep(2000);
+			}
+			
+			
 
 /*************************************************************/
 

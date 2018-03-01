@@ -21,6 +21,10 @@ public class ElevatorScene {
 	 * put the class name it's reffering to
 	 * then a dot and call it, Don't just type globalSemaphore!
 	 */
+	
+	//----public int-----//
+	public static int currElevatorAtFloor;
+	
 	//----Semaphores-----//
 	//There will be only one version of this running because it's static
 	//Pls cleanup after you new this !	
@@ -39,6 +43,8 @@ public class ElevatorScene {
 		public static Semaphore elevaitorPersonCountMutex;
 		public static Semaphore elevatorWaitSemaphore;
 		public static Semaphore elevatorWaitSemaphore2;
+		public static Semaphore elevatorFloorMutex;
+		public static Semaphore elevaitorPersonCountMutex2;
 		
 		public static boolean elevatorsMayDie;
 		public static ElevatorScene scene;
@@ -52,12 +58,15 @@ public class ElevatorScene {
 	
 	//------threads--------//
 	private Thread elevatorThread = null;
+	
+	// Davíð Threads
+	static ArrayList<Thread> elevatorThreads = null;
 	//------threads-------//
 
 	//TO SPEED THINGS UP WHEN TESTING,
 	//feel free to change this.  It will be changed during grading
 	// ekki fyrir nedan 50 milliseconds -Bjarki
-	public static final int VISUALIZATION_WAIT_TIME = 2000;  //milliseconds
+	public static final int VISUALIZATION_WAIT_TIME = 60;  //milliseconds
 	
 
 	private int numberOfFloors;
@@ -86,13 +95,18 @@ public class ElevatorScene {
 		
 		elevatorsMayDie = true;
 		
-		/**for(Thread thread: elevatorThreads) {
+		/*
+		for(Thread thread: elevatorThreads) {
 			if(thread != null) {
-				if(thread.isAlive()) {	DON'T DELETE, we will need it later
+				if(thread.isAlive()) {	//DON'T DELETE, we will need it later
 					thread.join();
 				}
 			}
-		}*/
+		}
+		*/
+		
+		
+		
 		if(elevatorThread != null) {
 			if(elevatorThread.isAlive()) {
 				try {
@@ -104,12 +118,14 @@ public class ElevatorScene {
 			}
 			
 		}
+		
 		elevatorsMayDie = false;
 		
 		scene = this;
 		globalSemaphore = new Semaphore(0);// <- the first one that calls wait will be stopped
 		personCountMutex = new Semaphore(1);//<- the first one that calls wait gets through, which means: only one at a time
 		elevatorWaitMutex = new Semaphore(1);
+		elevatorFloorMutex = new Semaphore(1);
 		
 		// Leifur Semaphore
 		firstFloorWaitMutex = new Semaphore(1);
@@ -118,6 +134,7 @@ public class ElevatorScene {
 		elevaitorPersonCountMutex = new Semaphore(1);
 		elevatorWaitSemaphore = new Semaphore(0);
 		elevatorWaitSemaphore2 = new Semaphore(0);
+		elevaitorPersonCountMutex2 = new Semaphore(1);
 		
 		/**
 		 * ATTENTION
@@ -182,10 +199,21 @@ public class ElevatorScene {
 		}
 		
 
-		// Start Elevator threads
+		// Start Elevator threads		
+		/*
 		elevatorThread = new Thread(new Elevator(1, 0));
 		elevatorThread.start();
-
+		*/
+		
+		// Do we need to join ? Or does it even matter at all ? What is life ?
+		for(int i = 0; i < numberOfElevators; i++) {
+			elevatorThread = new Thread(new Elevator(getCurrentFloorForElevator(i), getNumberOfPeopleInElevator(i), i));
+			elevatorThread.start();
+		}
+		
+		
+		
+		
 	}
 	
 	
@@ -213,10 +241,14 @@ public class ElevatorScene {
 		//were returning the thread for the base system that will clean up after us - Bjarki
 	}
 
+	public static void updateCurrentElevator(int key) {		
+		currElevatorAtFloor = key;		
+	}
+	
 	//Base function: definition must not change, but add your code
 	public int getCurrentFloorForElevator(int elevator) {
-
-		//dumb code, replace it!
+		
+			
 		return elevatorsFloor.get(elevator);
 	}
 	
@@ -236,6 +268,11 @@ public class ElevatorScene {
     public void currentElevatorToFirstFloor(int elevator) {
             	elevatorsFloor.set(elevator, 0);
     }
+    
+ // set elevator floor to 0 -DavidG
+    public void currentElevatorToFirstFloor(int elevator, int floor) {
+            	elevatorsFloor.set(elevator, floor);
+    }
 
 	//Base function: definition must not change, but add your code
 	public int getNumberOfPeopleInElevator(int elevator) {
@@ -243,12 +280,6 @@ public class ElevatorScene {
 		 * The person class should be implemented to
 		 * get the value.. not elevator
 		 */
-		//dumb code, replace it!
-		/*switch(elevator) {
-		case 1: return 1;
-		case 2: return 4;
-		default: return 3;
-		}*/
 		
 		return personCountInElevator.get(elevator);
 	}
