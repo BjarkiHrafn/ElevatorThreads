@@ -20,17 +20,17 @@ public class Elevator implements Runnable {
 				return; // this stops the program from running for an infinite time - Bjarki
 			}
 			
-			
+
 			try {
 				ElevatorScene.elevatorFloorMutex.acquire();
-					ElevatorScene.updateCurrentElevator(key);
+					ElevatorScene.scene.updateCurrentElevator(key);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
 			
 			// Permits for how many spaces there are left in elevator
-			System.out.println("Elevator.java");
-			ElevatorScene.inToElevatorFloorsSem.get(ElevatorScene.scene.getCurrentFloorForElevator(key)).release(6 - ElevatorScene.personCountInElevator.get(key));
+			//System.out.println("Elevator.java");
+			ElevatorScene.inToElevatorFloorsSem.get(ElevatorScene.getCurrentFloorForElevator(key)).release(6 - ElevatorScene.personCountInElevator.get(key));
 			System.out.println("people released into elevator floor");	
 			
 			try {
@@ -41,33 +41,28 @@ public class Elevator implements Runnable {
 			
 			// Fix permits back in case there are not 6 going into elevator
 			try {
-				ElevatorScene.inToElevatorFloorsSem.get(ElevatorScene.scene.getCurrentFloorForElevator(key)).acquire(6 - ElevatorScene.personCountInElevator.get(key));
+				ElevatorScene.inToElevatorFloorsSem.get(ElevatorScene.getCurrentFloorForElevator(key)).acquire(6 - ElevatorScene.personCountInElevator.get(key));
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
 			ElevatorScene.elevatorFloorMutex.release();
-				
-			
-			
+
 			// Move elevator to up one floor until 
 			// final floor is reached, then reset elevator 
 			// to first floor.
-			if(ElevatorScene.scene.getCurrentFloorForElevator(key) < ElevatorScene.scene.getNumberOfFloors() - 1) {
+			if(ElevatorScene.getCurrentFloorForElevator(key) < ElevatorScene.scene.getNumberOfFloors() - 1) {
 				ElevatorScene.incrementCurrentElevatorFloor(key);
 			}else {
 				ElevatorScene.scene.setCurrentElevatorToFirstFloor(key);				
-			}
+			}		
 			
-
-			
-			
-			
-			// Semaphore for waiting for person
-			// threads to get out of elevator
-			int currElevatorFloor = ElevatorScene.scene.getCurrentFloorForElevator(key);
+			int currElevatorFloor = ElevatorScene.getCurrentFloorForElevator(key);
 			int numPeopleInElevator = ElevatorScene.scene.getNumberOfPeopleInElevator(key);
-			ElevatorScene.outOfElevatorFloorsSem.get(currElevatorFloor).release(numPeopleInElevator);
+			//ElevatorScene.outOfElevatorFloorsSem.get(currElevatorFloor).release(numPeopleInElevator);
+			ElevatorScene.outOfElevatorFloorsSemTwoDemArr.get(key).get(currElevatorFloor).release(numPeopleInElevator);
 			
+			
+			System.out.println("People leaving elivator now->>>>>>>>>>>>>");
 			// Print out how many persons in elevator
 			System.out.println("Persons in elevator: " + ElevatorScene.personCountInElevator.get(key));
 			
@@ -78,12 +73,12 @@ public class Elevator implements Runnable {
 			}
 			
 			try {
-				ElevatorScene.outOfElevatorFloorsSem.get(ElevatorScene.scene.getCurrentFloorForElevator(key)).acquire(ElevatorScene.personCountInElevator.get(key));
+				//ElevatorScene.outOfElevatorFloorsSem.get(ElevatorScene.getCurrentFloorForElevator(key)).acquire(ElevatorScene.personCountInElevator.get(key));
+				ElevatorScene.outOfElevatorFloorsSemTwoDemArr.get(key).get(ElevatorScene.getCurrentFloorForElevator(key)).acquire(ElevatorScene.personCountInElevator.get(key));
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
 	
-			
 		}
 	}
 }

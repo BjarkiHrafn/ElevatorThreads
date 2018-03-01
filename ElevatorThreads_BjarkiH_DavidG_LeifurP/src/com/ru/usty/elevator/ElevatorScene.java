@@ -66,10 +66,13 @@ public class ElevatorScene {
 	 */
 	// Semaphores
 	static ArrayList<Semaphore> elevatorWaitMutexArr = null;
-	static ArrayList<Semaphore> outOfElevatorFloorsSem = null;
+	static ArrayList<Semaphore> elevatorWaitMutexArr2 = null;
+	static ArrayList<Semaphore> elevaitorPersonCountMutexArr = null;
 	static ArrayList<Semaphore> inToElevatorFloorsSem = null;
-	public static Semaphore elevatorWaitSemaphore;
-	public static Semaphore elevatorWaitSemaphore2;
+	static ArrayList<ArrayList<Semaphore>> outOfElevatorFloorsSemTwoDemArr = null;
+	//static ArrayList<Semaphore> outOfElevatorFloorsSem = null; TODO::REMOVE, NOT USED ANYMORE
+	//public static Semaphore elevatorWaitSemaphore; TODO::REMOVE, NOT USED ANYMORE
+	//public static Semaphore elevatorWaitSemaphore2; TODO::REMOVE, NOT USED ANYMORE
 	//public static Semaphore firstFloorInSemaphore; TODO::REMOVE, NOT USED ANYMORE
 	//public static Semaphore secondFloorOutSemaphore; TODO::REMOVE, NOT USED ANYMORE
 	//public static Semaphore globalSemaphore; TODO::REMOVE, NOT USED ANYMORE
@@ -124,8 +127,8 @@ public class ElevatorScene {
 		exitedCountMutex = new Semaphore(1);
 		
 		// Semaphores
-		elevatorWaitSemaphore = new Semaphore(0);
-		elevatorWaitSemaphore2 = new Semaphore(0);
+		//elevatorWaitSemaphore = new Semaphore(0);
+		//elevatorWaitSemaphore2 = new Semaphore(0);
 		//firstFloorInSemaphore = new Semaphore(0); TODO::REMOVE, NOT USED ANYMORE
 		//secondFloorOutSemaphore = new Semaphore(0); TODO::REMOVE, NOT USED ANYMORE
 		//globalSemaphore = new Semaphore(0); TODO::REMOVE, NOT USED ANYMORE
@@ -159,11 +162,24 @@ public class ElevatorScene {
 		for(int i = 0; i < getNumberOfElevators(); i++) {
 			personCountInElevator.add(0);
 		}
-		
+		/*
 		outOfElevatorFloorsSem = new ArrayList<Semaphore>();
 		for(int i = 0; i < getNumberOfFloors(); i++) {
 			outOfElevatorFloorsSem.add(new Semaphore(0));
 		}
+		*/
+		
+		
+		outOfElevatorFloorsSemTwoDemArr = new ArrayList<ArrayList<Semaphore>>();
+		ArrayList<Semaphore> inner = new ArrayList<Semaphore>();
+		for(int j = 0; j < getNumberOfFloors(); j++) {
+			inner.add(new Semaphore(0));
+		
+		}
+		for(int i = 0; i < getNumberOfElevators(); i++) {
+			outOfElevatorFloorsSemTwoDemArr.add(inner);
+		}
+		
 		
 		inToElevatorFloorsSem = new ArrayList<Semaphore>();
 		for(int i = 0; i < getNumberOfFloors(); i++) {
@@ -175,7 +191,17 @@ public class ElevatorScene {
 			elevatorWaitMutexArr.add(new Semaphore(1));
 		}
 		
-
+		elevatorWaitMutexArr2 = new ArrayList<Semaphore>();
+		for(int i = 0; i < getNumberOfElevators(); i++) {
+			elevatorWaitMutexArr2.add(new Semaphore(1));
+		}
+		
+		
+		elevaitorPersonCountMutexArr = new ArrayList<Semaphore>();
+		for(int i = 0; i < getNumberOfElevators(); i++) {
+			elevaitorPersonCountMutexArr.add(new Semaphore(1));
+		}
+		
 		// Start Elevator threads		
 		for(int i = 0; i < numberOfElevators; i++) {
 			elevatorThread = (new Thread(new Elevator(getCurrentFloorForElevator(i), getNumberOfPeopleInElevator(i), i)));
@@ -192,7 +218,7 @@ public class ElevatorScene {
 	
 	// PUBLIC FUNTIONS
 	// Update current elevator by key
-	public static void updateCurrentElevator(int key) {		
+	public void updateCurrentElevator(int key) {		
 		currElevatorAtFloor = key;		
 	}
 	
@@ -267,7 +293,7 @@ public class ElevatorScene {
 	}
 
 	// Base function: definition must not change, but add your code
-	public int getCurrentFloorForElevator(int elevator) {
+	public static int getCurrentFloorForElevator(int elevator) {
 		return elevatorsFloor.get(elevator);
 	}
 	
