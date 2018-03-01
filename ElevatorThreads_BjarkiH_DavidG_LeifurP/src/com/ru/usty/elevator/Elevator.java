@@ -20,11 +20,11 @@ public class Elevator implements Runnable {
 				return; // this stops the program from running for an infinite time - Bjarki
 			}
 			
+			
 			try {
 				ElevatorScene.elevatorFloorMutex.acquire();
 					ElevatorScene.updateCurrentElevator(key);
 			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			
@@ -45,25 +45,31 @@ public class Elevator implements Runnable {
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
-			
 			ElevatorScene.elevatorFloorMutex.release();
-						
-			//for(int i = 0;i < ElevatorScene.scene.getNumberOfFloors();i++){
-				// move elevator to next floor
+				
+			
+			
+			// Move elevator to up one floor until 
+			// final floor is reached, then reset elevator 
+			// to first floor.
 			if(ElevatorScene.scene.getCurrentFloorForElevator(key) < ElevatorScene.scene.getNumberOfFloors() - 1) {
-				System.out.println("now I can go to next floor");
 				ElevatorScene.incrementCurrentElevatorFloor(key);
 			}else {
-				System.out.println("now I can go to ground floor");
-				ElevatorScene.scene.currentElevatorToFirstFloor(key);				
+				ElevatorScene.scene.setCurrentElevatorToFirstFloor(key);				
 			}
 			
 
 			
-			ElevatorScene.outOfElevatorFloorsSem.get(ElevatorScene.scene.getCurrentFloorForElevator(key)).release(ElevatorScene.scene.getNumberOfPeopleInElevator(key));
 			
-			// release people from elevator
-			System.out.println(ElevatorScene.personCountInElevator.get(key));
+			
+			// Semaphore for waiting for person
+			// threads to get out of elevator
+			int currElevatorFloor = ElevatorScene.scene.getCurrentFloorForElevator(key);
+			int numPeopleInElevator = ElevatorScene.scene.getNumberOfPeopleInElevator(key);
+			ElevatorScene.outOfElevatorFloorsSem.get(currElevatorFloor).release(numPeopleInElevator);
+			
+			// Print out how many persons in elevator
+			System.out.println("Persons in elevator: " + ElevatorScene.personCountInElevator.get(key));
 			
 			try {
 				Thread.sleep(SLEEP_TIME);
@@ -77,6 +83,7 @@ public class Elevator implements Runnable {
 				e.printStackTrace();
 			}
 	
+			
 		}
 	}
 }

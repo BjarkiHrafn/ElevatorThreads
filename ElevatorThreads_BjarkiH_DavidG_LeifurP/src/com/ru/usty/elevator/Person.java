@@ -23,7 +23,6 @@ public class Person implements Runnable {
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		} 
-		// is now available
 		
 		
 		// People going into elevator, mutex used to go in one by one
