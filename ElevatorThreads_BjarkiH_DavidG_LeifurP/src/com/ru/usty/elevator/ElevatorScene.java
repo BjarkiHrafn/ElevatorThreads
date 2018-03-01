@@ -22,79 +22,75 @@ public class ElevatorScene {
 	 * then a dot and call it, Don't just type globalSemaphore!
 	 */
 	
-	//----public int-----//
+	
+	/* TO SPEED THINGS UP WHEN TESTING,
+	 * feel free to change this.  It will be changed during grading
+	 * ekki fyrir nedan 50 milliseconds -Bjarki
+	 */ 
+	public static final int VISUALIZATION_WAIT_TIME = 60;  // Ekki fyrir nedan 50 milliseconds
+	
+	//----Public int-----//
 	public static int currElevatorAtFloor;
+	//----Public int-----//
 	
-	//----Semaphores-----//
-	//There will be only one version of this running because it's static
-	//Pls cleanup after you new this !	
-	public static Semaphore globalSemaphore;
-	//that also exists mutex instead for Semaphore
-	public static Semaphore personCountMutex;
-	
-	public static Semaphore elevatorWaitMutex;
-	static ArrayList<Semaphore> elevatorWaitMutexArr = null;
-	
-	
-	// Leifur SemaPhores
-		public static Semaphore firstFloorWaitMutex;
-		public static Semaphore firstFloorInSemaphore;
-		public static Semaphore secondFloorOutSemaphore;
-		public static Semaphore elevaitorPersonCountMutex;
-		public static Semaphore elevatorWaitSemaphore;
-		public static Semaphore elevatorWaitSemaphore2;
-		public static Semaphore elevatorFloorMutex;
-		public static Semaphore elevaitorPersonCountMutex2;
-		
-		public static boolean elevatorsMayDie;
-		public static ElevatorScene scene;
-		
-	// Davíð SemaPhore
-	static ArrayList<Semaphore> outOfElevatorFloorsSem = null;
-	static ArrayList<Semaphore> inToElevatorFloorsSem = null;
-	
-	//------Semaphores------//
-	
-	
-	//------threads--------//
-	private Thread elevatorThread = null;
-	
-	// Davíð Threads
-	static ArrayList<Thread> elevatorThreads = null;
-	//------threads-------//
-
-	//TO SPEED THINGS UP WHEN TESTING,
-	//feel free to change this.  It will be changed during grading
-	// ekki fyrir nedan 50 milliseconds -Bjarki
-	public static final int VISUALIZATION_WAIT_TIME = 60;  //milliseconds
-	
-
+	//----Private int-----//
 	private int numberOfFloors;
 	private int numberOfElevators;
-
-	ArrayList<Integer> personCount; //use if you want but
-									//throw away and
-									//implement differently
-									//if it suits you
-	ArrayList<Integer> exitedCount = null;
+	
+	ArrayList<Integer> personCount; //TODO::DECLARE, PUBLIC OR PRIVATE?
+	ArrayList<Integer> exitedCount = null; //TODO::DECLARE, PUBLIC OR PRIVATE?
+	static ArrayList<Integer> elevatorsFloor = null; //TODO::DECLARE, PUBLIC OR PRIVATE?
+	static ArrayList<Integer> personCountInElevator = null; //TODO::DECLARE, PUBLIC OR PRIVATE?
+	//----Private int-----//
 	
 	
+	//----Booleans-----//
+	public static boolean elevatorsMayDie;
+	//----Booleans-----//
+	
+	//----ElevatorScenes----//
+	public static ElevatorScene scene;
+	//----ElevatorScenes----//
+	
+	//------Threads--------//
+	private Thread elevatorThread = null;
+	static ArrayList<Thread> elevatorThreads = null; // TODO::REMOVE, IS THIS NEEDED?
+	//------Threads-------//
 	
 	
-	//------Elevators------//
-	static ArrayList<Integer> elevatorsFloor = null;
-	static ArrayList<Integer> personCountInElevator = null;
+	//----Semaphores-----//
+	/*
+	 * There will be only one version of this running because it's static
+	 * Pls cleanup after you new this !	
+	 * that also exists mutex instead for Semaphore
+	 */
+	// Semaphores
+	static ArrayList<Semaphore> elevatorWaitMutexArr = null;
+	static ArrayList<Semaphore> outOfElevatorFloorsSem = null;
+	static ArrayList<Semaphore> inToElevatorFloorsSem = null;
+	public static Semaphore elevatorWaitSemaphore;
+	public static Semaphore elevatorWaitSemaphore2;
+	//public static Semaphore firstFloorInSemaphore; TODO::REMOVE, NOT USED ANYMORE
+	//public static Semaphore secondFloorOutSemaphore; TODO::REMOVE, NOT USED ANYMORE
+	//public static Semaphore globalSemaphore; TODO::REMOVE, NOT USED ANYMORE
 	
-	//ArrayList<Elevator> elevators = null;
-	
+	// Mutexes
+	public static Semaphore elevatorFloorMutex;
+	public static Semaphore elevaitorPersonCountMutex2;
+	public static Semaphore firstFloorWaitMutex;
+	public static Semaphore elevaitorPersonCountMutex;
+	public static Semaphore personCountMutex;
+	public static Semaphore elevatorWaitMutex;
 	public static Semaphore exitedCountMutex;
+	//------Semaphores------//
+	
 
+	// TODO::SET UNDER BASE FUNCTIONS WHEN PROJECT IS FINISHED
 	//Base function: definition must not change
 	//Necessary to add your code in this one
 	public void restartScene(int numberOfFloors, int numberOfElevators) {
 		
 		elevatorsMayDie = true;
-		
 		/*
 		for(Thread thread: elevatorThreads) {
 			if(thread != null) {
@@ -105,55 +101,36 @@ public class ElevatorScene {
 		}
 		*/
 		
-		
-		
 		if(elevatorThread != null) {
 			if(elevatorThread.isAlive()) {
 				try {
 					elevatorThread.join();
 				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-			}
-			
+			}	
 		}
 		
 		elevatorsMayDie = false;
-		
 		scene = this;
-		globalSemaphore = new Semaphore(0);// <- the first one that calls wait will be stopped
+		
+		// Mutexes
 		personCountMutex = new Semaphore(1);//<- the first one that calls wait gets through, which means: only one at a time
 		elevatorWaitMutex = new Semaphore(1);
 		elevatorFloorMutex = new Semaphore(1);
-		
-		// Leifur Semaphore
-		firstFloorWaitMutex = new Semaphore(1);
-		firstFloorInSemaphore = new Semaphore(0);
-		secondFloorOutSemaphore = new Semaphore(0);
 		elevaitorPersonCountMutex = new Semaphore(1);
+		firstFloorWaitMutex = new Semaphore(1);
+		elevaitorPersonCountMutex2 = new Semaphore(1);
+		exitedCountMutex = new Semaphore(1);
+		
+		// Semaphores
 		elevatorWaitSemaphore = new Semaphore(0);
 		elevatorWaitSemaphore2 = new Semaphore(0);
-		elevaitorPersonCountMutex2 = new Semaphore(1);
+		//firstFloorInSemaphore = new Semaphore(0); TODO::REMOVE, NOT USED ANYMORE
+		//secondFloorOutSemaphore = new Semaphore(0); TODO::REMOVE, NOT USED ANYMORE
+		//globalSemaphore = new Semaphore(0); TODO::REMOVE, NOT USED ANYMORE
 		
-		/**
-		 * ATTENTION
-		 * This is not an acceptable way to create threads,
-		 * However, it's ok when you are testing. -Bjarki
-		 */
-		
-		
-		/**
-		 * Important to add code here to make new
-		 * threads that run your elevator-runnables
-		 * 
-		 * Also add any other code that initializes
-		 * your system for a new run
-		 * 
-		 * If you can, tell any currently running
-		 * elevator threads to stop
-		 */
-
+		// TODO::USED FUNCTIONS INSTEAD
 		this.numberOfFloors = numberOfFloors;
 		this.numberOfElevators = numberOfElevators;		
 
@@ -171,7 +148,7 @@ public class ElevatorScene {
 		for(int i = 0; i < getNumberOfFloors(); i++) {
 			this.exitedCount.add(0);
 		}
-		exitedCountMutex = new Semaphore(1);
+		
 		
 		elevatorsFloor = new ArrayList<Integer>();
 		for(int i = 0; i < getNumberOfElevators(); i++) {
@@ -200,30 +177,78 @@ public class ElevatorScene {
 		
 
 		// Start Elevator threads		
-		/*
-		elevatorThread = new Thread(new Elevator(1, 0));
-		elevatorThread.start();
-		*/
-		
-		// Do we need to join ? Or does it even matter at all ? What is life ?
 		for(int i = 0; i < numberOfElevators; i++) {
-			elevatorThread = new Thread(new Elevator(getCurrentFloorForElevator(i), getNumberOfPeopleInElevator(i), i));
+			elevatorThread = (new Thread(new Elevator(getCurrentFloorForElevator(i), getNumberOfPeopleInElevator(i), i)));
 			elevatorThread.start();
-		}
-		
-		
-		
-		
+		}	
 	}
 	
 	
 
-	//Base function: definition must not change
-	//Necessary to add your code in this one
+
+	
+
+	// ===== ADDED FUNCTIONS, DEFINITION MUST NOT CHANGE =====
+	
+	// PUBLIC FUNTIONS
+	// Update current elevator by key
+	public static void updateCurrentElevator(int key) {		
+		currElevatorAtFloor = key;		
+	}
+	
+	// Increment current elevator by 1 floor
+    public static void incrementCurrentElevatorFloor(int elevator) {
+        elevatorsFloor.set(elevator, (elevatorsFloor.get(elevator) + 1));
+    }
+    
+    // Decrements current elevator by 1 floor FIXME::REMOVE THIS IF NOT USED??
+    public void decrementCurrentElevatorFloor(int elevator) {
+	    if(elevatorsFloor.get(elevator) >= 0)
+	    	elevatorsFloor.set(elevator, (elevatorsFloor.get(elevator) - 1));
+    }
+    
+    // Set elevator floor to 0, by elevator
+    public void setCurrentElevatorToFirstFloor(int elevator) {
+    	elevatorsFloor.set(elevator, 0);
+    }
+    
+    // Set elevator floor a selected floor, by elevator and floor
+    public void setCurrentElevatorToFirstFloor(int elevator, int floor) {
+    	elevatorsFloor.set(elevator, floor);
+    }
+
+	// Decrement number of people waiting at floor by one, by current floor
+	public void decrementNumberOfPeopleWaitingAtFloor(int floor) {
+		try {
+			ElevatorScene.personCountMutex.acquire();
+				personCount.set(floor, (personCount.get(floor) -1));
+			ElevatorScene.personCountMutex.release();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+	}
+
+	// Increment number of people waiting at floor by one, by current floor
+	public void incrementNumberOfPeopleWaitingAtFloor(int floor) {
+		try {
+			ElevatorScene.personCountMutex.acquire();
+				personCount.set(floor, (personCount.get(floor) +1));
+			ElevatorScene.personCountMutex.release();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	
+	// ===== BASE FUNCTIONS, DEFINITION MUST NOT CHANGE =====
+	
+	// PUBLIC FUNTIONS
+
+	// Base function: definition must not change
+	// Necessary to add your code in this one
 	public Thread addPerson(int sourceFloor, int destinationFloor) {
-		
-		//Go take a look at the person class when you want to add
-		//sourceFloor and destinationFloor into the thread
+		// Go take a look at the person class when you want to add
+		// sourceFloor and destinationFloor into the thread
 		Thread thread = new Thread(new Person(sourceFloor, destinationFloor));
 		thread.start();
 		/**
@@ -241,133 +266,70 @@ public class ElevatorScene {
 		//were returning the thread for the base system that will clean up after us - Bjarki
 	}
 
-	public static void updateCurrentElevator(int key) {		
-		currElevatorAtFloor = key;		
-	}
-	
-	//Base function: definition must not change, but add your code
+	// Base function: definition must not change, but add your code
 	public int getCurrentFloorForElevator(int elevator) {
-		
-			
 		return elevatorsFloor.get(elevator);
 	}
 	
-	// increment current elevator by 1 floor -DavidG
-    public static void incrementCurrentElevatorFloor(int elevator) {
-            //if(elevatorsFloors.get(elevator) <= numberOfFloors)
-            elevatorsFloor.set(elevator, (elevatorsFloor.get(elevator) + 1));
-    }
-    
-    // decrements current elevator by 1 floor -DavidG
-    public void decrementCurrentElevatorFloor(int elevator) {
-            if(elevatorsFloor.get(elevator) >= 0)
-            	elevatorsFloor.set(elevator, (elevatorsFloor.get(elevator) - 1));
-    }
-    
-    // set elevator floor to 0 -DavidG
-    public void currentElevatorToFirstFloor(int elevator) {
-            	elevatorsFloor.set(elevator, 0);
-    }
-    
- // set elevator floor to 0 -DavidG
-    public void currentElevatorToFirstFloor(int elevator, int floor) {
-            	elevatorsFloor.set(elevator, floor);
-    }
-
-	//Base function: definition must not change, but add your code
+	// Base function: definition must not change, but add your code
 	public int getNumberOfPeopleInElevator(int elevator) {
-		/**
-		 * The person class should be implemented to
-		 * get the value.. not elevator
-		 */
-		
 		return personCountInElevator.get(elevator);
 	}
 
-	//Base function: definition must not change, but add your code
+	// Base function: definition must not change, but add your code
 	public int getNumberOfPeopleWaitingAtFloor(int floor) {
-
 		return personCount.get(floor);
 	}
 	
-	public void decrementNumberOfPeopleWaitingAtFloor(int floor) {
-		try {
-			// We might need another mutex for floors
-			ElevatorScene.personCountMutex.acquire();
-				personCount.set(floor, (personCount.get(floor) -1));
-			ElevatorScene.personCountMutex.release();
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} // wait
-		
-	}// added by Bjarki
-
-	public void incrementNumberOfPeopleWaitingAtFloor(int floor) {
-		try {
-			// We might need another mutex for floors
-			ElevatorScene.personCountMutex.acquire();
-				personCount.set(floor, (personCount.get(floor) +1));
-			ElevatorScene.personCountMutex.release();
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} // wait
-		
-	}// added by Bjarki
-	//Base function: definition must not change, but add your code if needed
+	// Base function: definition must not change, but add your code if needed
 	public int getNumberOfFloors() {
 		return numberOfFloors;
 	}
 
-	//Base function: definition must not change, but add your code if needed
+	// Base function: definition must not change, but add your code if needed
 	public void setNumberOfFloors(int numberOfFloors) {
 		this.numberOfFloors = numberOfFloors;
 	}
 
-	//Base function: definition must not change, but add your code if needed
+	// Base function: definition must not change, but add your code if needed
 	public int getNumberOfElevators() {
 		return numberOfElevators;
 	}
 
-	//Base function: definition must not change, but add your code if needed
+	// Base function: definition must not change, but add your code if needed
 	public void setNumberOfElevators(int numberOfElevators) {
 		this.numberOfElevators = numberOfElevators;
 	}
 
-	//Base function: no need to change unless you choose
-	//				 not to "open the doors" sometimes
-	//				 even though there are people there
+	// Base function: no need to change unless you choose
+	//				  not to "open the doors" sometimes
+	//				  even though there are people there
 	public boolean isElevatorOpen(int elevator) {
-
 		return isButtonPushedAtFloor(getCurrentFloorForElevator(elevator));
 	}
-	//Base function: no need to change, just for visualization
-	//Feel free to use it though, if it helps
+	
+	// Base function: no need to change, just for visualization
+	// Feel free to use it though, if it helps
 	public boolean isButtonPushedAtFloor(int floor) {
-
 		return (getNumberOfPeopleWaitingAtFloor(floor) > 0);
 	}
 
-	//Person threads must call this function to
-	//let the system know that they have exited.
-	//Person calls it after being let off elevator
-	//but before it finishes its run.
+	// Person threads must call this function to
+	// let the system know that they have exited.
+	// Person calls it after being let off elevator
+	// but before it finishes its run.
 	public void personExitsAtFloor(int floor) {
 		try {
-			
 			exitedCountMutex.acquire();
 			exitedCount.set(floor, (exitedCount.get(floor) + 1));
 			exitedCountMutex.release();
-
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
 
-	//Base function: no need to change, just for visualization
-	//Feel free to use it though, if it helps
+	// Base function: no need to change, just for visualization
+	// Feel free to use it though, if it helps
 	public int getExitedCountAtFloor(int floor) {
 		if(floor < getNumberOfFloors()) {
 			return exitedCount.get(floor);
@@ -376,6 +338,4 @@ public class ElevatorScene {
 			return 0;
 		}
 	}
-
-
 }
