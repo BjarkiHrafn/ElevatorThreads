@@ -40,7 +40,7 @@ public class Elevator implements Runnable {
 			}
 			// Release permits for person threads entering elevator for current floor
 			{
-				ElevatorScene.scene.updateCurrentElevator(this.key);
+				ElevatorScene.scene.updateCurrentElevatorAtFloor(ElevatorScene.getCurrentFloorForElevator(this.key), this.key);
 				currFloorEle = ElevatorScene.getCurrentFloorForElevator(this.key);
 				spaceLeft = (6 - ElevatorScene.scene.getNumberOfPeopleInElevator(this.key));				
 				

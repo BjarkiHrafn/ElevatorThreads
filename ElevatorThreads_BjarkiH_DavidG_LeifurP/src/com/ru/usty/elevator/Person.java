@@ -44,7 +44,7 @@ public class Person implements Runnable {
 			e2.printStackTrace();
 		}
 		{
-			myElevatorKey = ElevatorScene.currElevatorAtFloor;
+			myElevatorKey = ElevatorScene.scene.getCurrentElevatorAtFloor(this.sourceFloor);
 			ElevatorScene.WatcherOfElevatorKeyMutex.release();
 		}
 		///---- Person Thread Getting What Elevator They Entered End ----///	
