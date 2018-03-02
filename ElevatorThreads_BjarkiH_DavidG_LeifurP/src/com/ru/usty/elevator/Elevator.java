@@ -6,6 +6,8 @@ public class Elevator implements Runnable {
 
 	int CurrentFloorForElevator, NumberOfPeopleInElevator, key, currFloorEle, spaceLeft, numPeopleInElevator;
 	static final int SLEEP_TIME = ElevatorScene.VISUALIZATION_WAIT_TIME / 2;
+	static int topCounterServicer = 0;
+	static int bottomCounterService = ElevatorScene.scene.getNumberOfFloors() - 1;
 	boolean dir = true;
 	
 	public Elevator(int CurrentFloorForElevator, int NumberOfPeopleInElevator, int key) {
@@ -34,13 +36,13 @@ public class Elevator implements Runnable {
 			
 			///---- People Entering Elevator Begin ----///
 			try {
-				ElevatorScene.elevatorFloorMutex.acquire();	
+				ElevatorScene.elevatorFloorMutexArr.get(currFloorEle).acquire();	
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
 			// Release permits for person threads entering elevator for current floor
 			{
-				ElevatorScene.scene.updateCurrentElevatorAtFloor(ElevatorScene.getCurrentFloorForElevator(this.key), this.key);
+				ElevatorScene.scene.setCurrentElevatorAtFloor(ElevatorScene.getCurrentFloorForElevator(this.key), this.key);
 				currFloorEle = ElevatorScene.getCurrentFloorForElevator(this.key);
 				spaceLeft = (6 - ElevatorScene.scene.getNumberOfPeopleInElevator(this.key));				
 				
@@ -73,10 +75,8 @@ public class Elevator implements Runnable {
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
-			ElevatorScene.elevatorFloorMutex.release();
+			ElevatorScene.elevatorFloorMutexArr.get(currFloorEle).release();
 			///---- People Entering Elevator End ----///
-			
-
 			
 			///---- Move Elevator Begin ----///
 			/*
@@ -95,14 +95,11 @@ public class Elevator implements Runnable {
 			}
 			*/
 			
-			
 			if(dir) {
-				ElevatorScene.incrementCurrentElevatorFloor(this.key);
+				ElevatorScene.scene.incrementCurrentElevatorFloor(this.key);
 			}else {
 				ElevatorScene.scene.decrementCurrentElevatorFloor(this.key);
 			}
-			
-			
 					
 			/*
 			if(ElevatorScene.getCurrentFloorForElevator(this.key) < ElevatorScene.scene.getNumberOfFloors() - 1) {
@@ -138,6 +135,50 @@ public class Elevator implements Runnable {
 				e.printStackTrace();
 			}
 			///---- People Leaving Elevator End ----///
+			
+			if(currFloorEle == ElevatorScene.scene.getNumberOfFloors() - 1) {
+				if(topCounterServicer != ElevatorScene.scene.getNumberOfFloors() - 1) {
+					try {
+						ElevatorScene.oddNumberElevatorsMutex.acquire();
+						
+						
+						if(this.key %2 != 0) {
+							topCounterServicer++;
+							System.out.println("topCounterServicer is: " + topCounterServicer);
+							ElevatorScene.elevatorsFloor.set(this.key, topCounterServicer);
+						}
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					ElevatorScene.oddNumberElevatorsMutex.release();
+					
+				}else {
+					topCounterServicer = 0;
+				}
+			}
+			
+			if(currFloorEle == 0) {
+				if(bottomCounterService != 0) {
+					try {
+						ElevatorScene.oddNumberElevatorsMutex.acquire();
+						
+						
+						if(this.key %2 != 0) {
+							bottomCounterService--;
+							System.out.println("bottomCounterServicer is: " + bottomCounterService);
+							ElevatorScene.elevatorsFloor.set(this.key, bottomCounterService);
+						}
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					ElevatorScene.oddNumberElevatorsMutex.release();
+					
+				}else {
+					bottomCounterService = ElevatorScene.scene.getNumberOfFloors() - 1;
+				}
+			}
 	
 		}
 	}

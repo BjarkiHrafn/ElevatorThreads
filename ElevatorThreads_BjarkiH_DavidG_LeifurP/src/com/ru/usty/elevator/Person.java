@@ -85,8 +85,6 @@ public class Person implements Runnable {
 }
 
 
-
-
 /*
 // People leaving elevator, mutex used to go in one by one
 // ----
