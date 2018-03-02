@@ -27,7 +27,7 @@ public class ElevatorScene {
 	 * feel free to change this.  It will be changed during grading
 	 * ekki fyrir nedan 50 milliseconds -Bjarki
 	 */ 
-	public static final int VISUALIZATION_WAIT_TIME = 60;  // Ekki fyrir nedan 50 milliseconds
+	public static final int VISUALIZATION_WAIT_TIME = 2000;  // Ekki fyrir nedan 50 milliseconds
 	
 	///---- Public int -----///
 	public static int currElevatorAtFloor;
