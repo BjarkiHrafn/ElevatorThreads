@@ -14,7 +14,7 @@ public class Person implements Runnable {
 	@Override
 	public void run() {
 		
-		try {			
+		try {
 			ElevatorScene.inToElevatorFloorsSem.get(sourceFloor).acquire();
 		} catch (InterruptedException e) {
 			e.printStackTrace();

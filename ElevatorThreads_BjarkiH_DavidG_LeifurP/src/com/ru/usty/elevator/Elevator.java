@@ -6,6 +6,7 @@ public class Elevator implements Runnable {
 
 	int CurrentFloorForElevator, NumberOfPeopleInElevator, key, currFloorEle, spaceLeft, numPeopleInElevator;
 	static final int SLEEP_TIME = ElevatorScene.VISUALIZATION_WAIT_TIME / 2;
+	boolean dir = true;
 	
 	public Elevator(int CurrentFloorForElevator, int NumberOfPeopleInElevator, int key) {
 		this.CurrentFloorForElevator = CurrentFloorForElevator;
@@ -62,11 +63,29 @@ public class Elevator implements Runnable {
 			 * final floor is reached, then reset elevator 
 			 * to first floor.
 			 */
+			
+			currFloorEle = ElevatorScene.getCurrentFloorForElevator(this.key);
+			if(currFloorEle == 0) {
+				dir = true;
+			}
+			else if(currFloorEle == ElevatorScene.scene.getNumberOfFloors() - 1) {
+				dir = false;
+			}
+			
+			if(dir) {
+				ElevatorScene.incrementCurrentElevatorFloor(this.key);
+			}else {
+				ElevatorScene.scene.decrementCurrentElevatorFloor(this.key);
+			}
+			
+			
+					
+			/*
 			if(ElevatorScene.getCurrentFloorForElevator(this.key) < ElevatorScene.scene.getNumberOfFloors() - 1) {
 				ElevatorScene.incrementCurrentElevatorFloor(this.key);
 			}else {
 				ElevatorScene.scene.setCurrentElevatorToFirstFloor(this.key);				
-			}		
+			}*/
 			///---- Move Elevator End ----///
 			
 			
