@@ -2,8 +2,8 @@ package com.ru.usty.elevator;
 
 import java.util.ArrayList;
 import java.util.concurrent.Semaphore;
-
 import javax.sound.midi.SoundbankResource;
+
 
 /**
  * The base function definitions of this class must stay the same
@@ -27,7 +27,7 @@ public class ElevatorScene {
 	 * feel free to change this.  It will be changed during grading
 	 * ekki fyrir nedan 50 milliseconds -Bjarki
 	 */ 
-	public static final int VISUALIZATION_WAIT_TIME = 2000;  // Ekki fyrir nedan 50 milliseconds
+	public static final int VISUALIZATION_WAIT_TIME = 150;  // Ekki fyrir nedan 50 milliseconds
 	
 	///---- Public int -----///
 	public static int currElevatorAtFloor;
@@ -41,6 +41,7 @@ public class ElevatorScene {
 	ArrayList<Integer> exitedCount = null; //TODO::DECLARE, PUBLIC OR PRIVATE?
 	static ArrayList<Integer> elevatorsFloor = null; //TODO::DECLARE, PUBLIC OR PRIVATE?
 	static ArrayList<Integer> personCountInElevator = null; //TODO::DECLARE, PUBLIC OR PRIVATE?
+	static ArrayList<Boolean> elevatorDirection = null;
 	///---- Private int -----///
 	
 	
@@ -68,7 +69,8 @@ public class ElevatorScene {
 	static ArrayList<Semaphore> elevatorWaitMutexArr = null;
 	static ArrayList<Semaphore> elevatorWaitMutexArr2 = null;
 	static ArrayList<Semaphore> elevaitorPersonCountMutexArr = null;
-	static ArrayList<Semaphore> inToElevatorFloorsSem = null;
+	static ArrayList<Semaphore> goingUpSemArr = null;
+	static ArrayList<Semaphore> goingDownSemArr = null;
 	static Semaphore[][] TwoD_ArrayOUT = null;
 	static ArrayList<Semaphore> outOfElevatorFloorsSem = null;
 
@@ -86,6 +88,7 @@ public class ElevatorScene {
 	public static Semaphore personCountMutex2;
 	public static Semaphore NumberOfPeopleInElevatorMutex;
 	public static Semaphore CurrentElevatorFloorMutex;
+	public static Semaphore elevatorDirectionMutex;
 	///---- Semaphores ----///
 	
 
@@ -126,6 +129,7 @@ public class ElevatorScene {
 		personCountMutex2 = new Semaphore(1);
 		NumberOfPeopleInElevatorMutex = new Semaphore(1);
 		CurrentElevatorFloorMutex = new Semaphore(1);
+		elevatorDirectionMutex = new Semaphore(1);
 		
 		// Semaphores
 		
@@ -156,6 +160,11 @@ public class ElevatorScene {
 		for(int i = 0; i < getNumberOfElevators(); i++) {
 			personCountInElevator.add(0);
 		}
+		
+		elevatorDirection = new ArrayList<Boolean>();
+		for(int i = 0; i < getNumberOfElevators(); i++) {
+			elevatorDirection.add(true);
+		}
 
 		TwoD_ArrayOUT = new Semaphore[getNumberOfElevators()][getNumberOfFloors()];
 		for(int i = 0; i < getNumberOfElevators(); i++) {
@@ -165,9 +174,14 @@ public class ElevatorScene {
 		}
 		
 		
-		inToElevatorFloorsSem = new ArrayList<Semaphore>();
+		goingUpSemArr = new ArrayList<Semaphore>();
 		for(int i = 0; i < getNumberOfFloors(); i++) {
-			inToElevatorFloorsSem.add(new Semaphore(0));
+			goingUpSemArr.add(new Semaphore(0));
+		}
+		
+		goingDownSemArr = new ArrayList<Semaphore>();
+		for(int i = 0; i < getNumberOfFloors(); i++) {
+			goingDownSemArr.add(new Semaphore(0));
 		}
 		
 		elevatorWaitMutexArr = new ArrayList<Semaphore>();
@@ -202,6 +216,18 @@ public class ElevatorScene {
 	// ===== ADDED FUNCTIONS, DEFINITION MUST NOT CHANGE =====
 	
 	// PUBLIC FUNTIONS
+	
+	public void setElevatorDirection(int elevator, boolean bool) {
+		try {
+			elevatorDirectionMutex.acquire();
+				elevatorDirection.set(elevator, bool);
+			elevatorDirectionMutex.release();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		
+	}
+	
 	// Update current elevator by key
 	public void incrementNumberOfPeopleInElevator(int elevator) {
 		try {
@@ -209,7 +235,6 @@ public class ElevatorScene {
 				personCountInElevator.set(elevator, personCountInElevator.get(elevator)+1);
 			NumberOfPeopleInElevatorMutex.release();
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
@@ -238,7 +263,6 @@ public class ElevatorScene {
 			 	elevatorsFloor.set(elevator, (elevatorsFloor.get(elevator) + 1));
 		     CurrentElevatorFloorMutex.release();
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
        
@@ -252,7 +276,6 @@ public class ElevatorScene {
 					elevatorsFloor.set(elevator, (elevatorsFloor.get(elevator) - 1));
 		    	CurrentElevatorFloorMutex.release();
 			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 	    	
@@ -265,7 +288,6 @@ public class ElevatorScene {
 				elevatorsFloor.set(elevator, 0);
 	    	CurrentElevatorFloorMutex.release();
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
     	
@@ -282,7 +304,6 @@ public class ElevatorScene {
 			try {
 				ElevatorScene.personCountMutex.acquire();
 			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 				personCount.set(floor, (personCount.get(floor) -1));
@@ -296,7 +317,6 @@ public class ElevatorScene {
 			try {
 				ElevatorScene.personCountMutex.acquire();
 			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 				personCount.set(floor, (personCount.get(floor) +1));
@@ -398,12 +418,9 @@ public class ElevatorScene {
 	public int getExitedCountAtFloor(int floor) {
 		if(floor < getNumberOfFloors()) {
 			return exitedCount.get(floor);
-			
 		}
 		else {
 			return 0;
-		}
-		
-		
+		}	
 	}
 }

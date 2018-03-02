@@ -3,6 +3,7 @@ package com.ru.usty.elevator;
 public class Person implements Runnable {
 //Note that creating a runnable class means you have to specify everything that will run
 	int sourceFloor, destinationFloor, myElevatorKey;
+	boolean dir;
 	
 	
 	//This might not be the best way to get src and dst inside Person!
@@ -15,7 +16,16 @@ public class Person implements Runnable {
 	public void run() {
 		
 		try {
-			ElevatorScene.inToElevatorFloorsSem.get(sourceFloor).acquire();
+			//ElevatorScene.elevatorWaitMutex.acquire();
+				// Going up
+				if(sourceFloor < destinationFloor) {
+					ElevatorScene.goingUpSemArr.get(sourceFloor).acquire();
+				}
+				// Going down
+				else {
+					ElevatorScene.goingDownSemArr.get(sourceFloor).acquire();
+				}
+			//ElevatorScene.elevatorWaitMutex.release();
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
