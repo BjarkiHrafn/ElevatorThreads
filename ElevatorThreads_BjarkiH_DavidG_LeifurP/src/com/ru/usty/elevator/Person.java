@@ -14,7 +14,6 @@ public class Person implements Runnable {
 	@Override
 	public void run() {
 		
-		///---- People Waiting On Floor Semaphore For Elevator Begin----///	
 		try {			
 			ElevatorScene.inToElevatorFloorsSem.get(sourceFloor).acquire();
 		} catch (InterruptedException e) {
@@ -44,7 +43,7 @@ public class Person implements Runnable {
 		///---- People Entering Elevator Begin ----///
 		{			
 			ElevatorScene.scene.decrementNumberOfPeopleWaitingAtFloor(sourceFloor);
-			System.out.println("Person.java says that people are going into elevator");
+			//System.out.println("Person.java says that people are going into elevator");
 			ElevatorScene.scene.incrementNumberOfPeopleInElevator(myElevatorKey);
 		}
 		// Alternative code
@@ -68,7 +67,7 @@ public class Person implements Runnable {
 		///---- People Leaving Elevator Begin ----///
 		{
 			ElevatorScene.scene.decrementNumberOfPeopleInElevator(myElevatorKey);
-			System.out.println("Person.java says that people are leaving elevator");
+			//System.out.println("Person.java says that people are leaving elevator");
 			ElevatorScene.scene.personExitsAtFloor(destinationFloor); // exits at destination floor add parameter
 		}
 		///---- People Leaving Elevator End ----///
