@@ -29,11 +29,11 @@ public class ElevatorScene {
 	 */ 
 	public static final int VISUALIZATION_WAIT_TIME = 300;  // Ekki fyrir nedan 50 milliseconds
 	
-	//----Public int-----//
+	///---- Public int -----///
 	public static int currElevatorAtFloor;
-	//----Public int-----//
+	///---- Public int -----///
 	
-	//----Private int-----//
+	///---- Private int -----///
 	private int numberOfFloors;
 	private int numberOfElevators;
 	
@@ -41,24 +41,24 @@ public class ElevatorScene {
 	ArrayList<Integer> exitedCount = null; //TODO::DECLARE, PUBLIC OR PRIVATE?
 	static ArrayList<Integer> elevatorsFloor = null; //TODO::DECLARE, PUBLIC OR PRIVATE?
 	static ArrayList<Integer> personCountInElevator = null; //TODO::DECLARE, PUBLIC OR PRIVATE?
-	//----Private int-----//
+	///---- Private int -----///
 	
 	
-	//----Booleans-----//
+	///---- Public Booleans -----///
 	public static boolean elevatorsMayDie;
-	//----Booleans-----//
+	///---- Public Booleans -----///
 	
-	//----ElevatorScenes----//
+	///---- ElevatorScenes ----///
 	public static ElevatorScene scene;
-	//----ElevatorScenes----//
+	///---- ElevatorScenes ----///
 	
-	//------Threads--------//
+	///---- Threads ----///
 	private Thread elevatorThread = null;
 	static ArrayList<Thread> elevatorThreads = null; // TODO::REMOVE, IS THIS NEEDED?
-	//------Threads-------//
+	///---- Threads ----///
 	
 	
-	//----Semaphores-----//
+	///---- Semaphores ----///
 	/*
 	 * There will be only one version of this running because it's static
 	 * Pls cleanup after you new this !	
@@ -69,14 +69,9 @@ public class ElevatorScene {
 	static ArrayList<Semaphore> elevatorWaitMutexArr2 = null;
 	static ArrayList<Semaphore> elevaitorPersonCountMutexArr = null;
 	static ArrayList<Semaphore> inToElevatorFloorsSem = null;
-	static ArrayList<ArrayList<Semaphore>> outOfElevatorFloorsSemTwoDemArr = null;
 	static Semaphore[][] TwoD_ArrayOUT = null;
-	//static ArrayList<Semaphore> outOfElevatorFloorsSem = null; TODO::REMOVE, NOT USED ANYMORE
-	//public static Semaphore elevatorWaitSemaphore; TODO::REMOVE, NOT USED ANYMORE
-	//public static Semaphore elevatorWaitSemaphore2; TODO::REMOVE, NOT USED ANYMORE
-	//public static Semaphore firstFloorInSemaphore; TODO::REMOVE, NOT USED ANYMORE
-	//public static Semaphore secondFloorOutSemaphore; TODO::REMOVE, NOT USED ANYMORE
-	//public static Semaphore globalSemaphore; TODO::REMOVE, NOT USED ANYMORE
+	static ArrayList<Semaphore> outOfElevatorFloorsSem = null;
+
 	
 	// Mutexes
 	public static Semaphore elevatorFloorMutex;
@@ -91,12 +86,11 @@ public class ElevatorScene {
 	public static Semaphore personCountMutex2;
 	public static Semaphore NumberOfPeopleInElevatorMutex;
 	public static Semaphore CurrentElevatorFloorMutex;
-	//------Semaphores------//
+	///---- Semaphores ----///
 	
 
 	// TODO::SET UNDER BASE FUNCTIONS WHEN PROJECT IS FINISHED
-	//Base function: definition must not change
-	//Necessary to add your code in this one
+	// Base function: definition must not change, but add your code
 	public void restartScene(int numberOfFloors, int numberOfElevators) {
 		
 		elevatorsMayDie = true;
@@ -122,6 +116,9 @@ public class ElevatorScene {
 		
 		elevatorsMayDie = false;
 		scene = this;
+		// TODO::USED FUNCTIONS INSTEAD
+		this.numberOfFloors = numberOfFloors;
+		this.numberOfElevators = numberOfElevators;	
 		
 		// Mutexes
 		personCountMutex = new Semaphore(1);//<- the first one that calls wait gets through, which means: only one at a time
@@ -138,15 +135,8 @@ public class ElevatorScene {
 		CurrentElevatorFloorMutex = new Semaphore(1);
 		
 		// Semaphores
-		//elevatorWaitSemaphore = new Semaphore(0);
-		//elevatorWaitSemaphore2 = new Semaphore(0);
-		//firstFloorInSemaphore = new Semaphore(0); TODO::REMOVE, NOT USED ANYMORE
-		//secondFloorOutSemaphore = new Semaphore(0); TODO::REMOVE, NOT USED ANYMORE
-		//globalSemaphore = new Semaphore(0); TODO::REMOVE, NOT USED ANYMORE
 		
-		// TODO::USED FUNCTIONS INSTEAD
-		this.numberOfFloors = numberOfFloors;
-		this.numberOfElevators = numberOfElevators;		
+			
 
 		personCount = new ArrayList<Integer>();
 		for(int i = 0; i < numberOfFloors; i++) {
@@ -173,29 +163,12 @@ public class ElevatorScene {
 		for(int i = 0; i < getNumberOfElevators(); i++) {
 			personCountInElevator.add(0);
 		}
-		/*
-		outOfElevatorFloorsSem = new ArrayList<Semaphore>();
-		for(int i = 0; i < getNumberOfFloors(); i++) {
-			outOfElevatorFloorsSem.add(new Semaphore(0));
-		}
-		*/
+
 		TwoD_ArrayOUT = new Semaphore[getNumberOfElevators()][getNumberOfFloors()];
-		
 		for(int i = 0; i < getNumberOfElevators(); i++) {
 			for(int j = 0; j < getNumberOfFloors(); j++) {
 				TwoD_ArrayOUT[i][j] = new Semaphore(0);
 			}
-		}
-		
-		
-		outOfElevatorFloorsSemTwoDemArr = new ArrayList<ArrayList<Semaphore>>();
-		ArrayList<Semaphore> inner = new ArrayList<Semaphore>();
-		for(int j = 0; j < getNumberOfFloors(); j++) {
-			inner.add(new Semaphore(0));
-		
-		}
-		for(int i = 0; i < getNumberOfElevators(); i++) {
-			outOfElevatorFloorsSemTwoDemArr.add(inner);
 		}
 		
 		

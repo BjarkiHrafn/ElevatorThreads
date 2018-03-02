@@ -4,7 +4,7 @@ import java.util.concurrent.Semaphore;
 
 public class Elevator implements Runnable {
 
-	int CurrentFloorForElevator, NumberOfPeopleInElevator, key;
+	int CurrentFloorForElevator, NumberOfPeopleInElevator, key, currFloorEle, spaceLeft, numPeopleInElevator;
 	static final int SLEEP_TIME = ElevatorScene.VISUALIZATION_WAIT_TIME / 2;
 	
 	public Elevator(int CurrentFloorForElevator, int NumberOfPeopleInElevator, int key) {
@@ -16,70 +16,85 @@ public class Elevator implements Runnable {
 	@Override
 	public void run() {
 		while(true) {
+			///---- Stop The Program From Running Infinitely Begin----///
 			if(ElevatorScene.elevatorsMayDie) {
 				return; // this stops the program from running for an infinite time - Bjarki
 			}
-			
+			///---- Stop The Program From Running Infinitely End----///
 
+			
+			///---- People Entering Elevator Begin ----///
 			try {
-				ElevatorScene.elevatorFloorMutex.acquire();
-					
+				ElevatorScene.elevatorFloorMutex.acquire();	
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
-			ElevatorScene.scene.updateCurrentElevator(this.key);
-			// Permits for how many spaces there are left in elevator
-			//System.out.println("Elevator.java");
-			ElevatorScene.inToElevatorFloorsSem.get(ElevatorScene.getCurrentFloorForElevator(this.key)).release(6 - ElevatorScene.scene.getNumberOfPeopleInElevator(this.key));
+			// Release permits for person threads entering elevator for current floor
+			{
+				ElevatorScene.scene.updateCurrentElevator(this.key);
+				currFloorEle = ElevatorScene.getCurrentFloorForElevator(this.key);
+				spaceLeft = (6 - ElevatorScene.scene.getNumberOfPeopleInElevator(this.key));
+				ElevatorScene.inToElevatorFloorsSem.get(currFloorEle).release(spaceLeft);
+			}
 			
+			// Sleep time proportional to visualization wait time, to make sure persons
+			// have time to get into elevator
 			try {
 				Thread.sleep(SLEEP_TIME);
 			} catch (InterruptedException e1) {
 				e1.printStackTrace();
 			}
-			
-			// Fix permits back in case there are not 6 going into elevator
+			// Acquire permits back before next step
 			try {
-				ElevatorScene.inToElevatorFloorsSem.get(ElevatorScene.getCurrentFloorForElevator(this.key)).acquire(6 - ElevatorScene.scene.getNumberOfPeopleInElevator(this.key));
+				currFloorEle = ElevatorScene.getCurrentFloorForElevator(this.key);
+				spaceLeft = (6 - ElevatorScene.scene.getNumberOfPeopleInElevator(this.key));
+				ElevatorScene.inToElevatorFloorsSem.get(currFloorEle).acquire(spaceLeft);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
 			ElevatorScene.elevatorFloorMutex.release();
+			///---- People Entering Elevator End ----///
+			
 
-			// Move elevator to up one floor until 
-			// final floor is reached, then reset elevator 
-			// to first floor.
+			///---- Move Elevator Begin ----///
+			/*
+			 * Move elevator to up one floor until 
+			 * final floor is reached, then reset elevator 
+			 * to first floor.
+			 */
 			if(ElevatorScene.getCurrentFloorForElevator(this.key) < ElevatorScene.scene.getNumberOfFloors() - 1) {
 				ElevatorScene.incrementCurrentElevatorFloor(this.key);
 			}else {
 				ElevatorScene.scene.setCurrentElevatorToFirstFloor(this.key);				
 			}		
-		
-			int currElevatorFloor = ElevatorScene.getCurrentFloorForElevator(this.key);
+			///---- Move Elevator End ----///
 			
-			int numPeopleInElevator = ElevatorScene.scene.getNumberOfPeopleInElevator(this.key);
-			//ElevatorScene.outOfElevatorFloorsSem.get(currElevatorFloor).release(numPeopleInElevator);
-			//ElevatorScene.outOfElevatorFloorsSemTwoDemArr.get(key).get(currElevatorFloor).release(numPeopleInElevator);
-			ElevatorScene.TwoD_ArrayOUT[this.key][currElevatorFloor].release(numPeopleInElevator);
-			System.out.println("Elevator.java says: number of people in elevator are" + numPeopleInElevator);
 			
-			// Print out how many persons in elevator
-			
+			///---- People Leaving Elevator Begin ----///
+			// Release permits for person threads leaving elevator for current floor
+			{
+				currFloorEle = ElevatorScene.getCurrentFloorForElevator(this.key);
+				numPeopleInElevator = ElevatorScene.scene.getNumberOfPeopleInElevator(this.key);
+				ElevatorScene.TwoD_ArrayOUT[this.key][currFloorEle].release(numPeopleInElevator);
+				System.out.println("Elevator.java says: number of people in elevator are" + numPeopleInElevator);
+			}
+
+			// Sleep time proportional to visualization wait time, to make sure persons
+			// have time to get out of elevator
 			try {
 				Thread.sleep(SLEEP_TIME);
 			} catch (InterruptedException e1) {
 				e1.printStackTrace();
 			}
 			
+			// Acquire permits back before next step
 			try {
-				//ElevatorScene.outOfElevatorFloorsSem.get(ElevatorScene.getCurrentFloorForElevator(key)).acquire(ElevatorScene.personCountInElevator.get(key));
-				//ElevatorScene.outOfElevatorFloorsSemTwoDemArr.get(key).get(ElevatorScene.getCurrentFloorForElevator(key)).acquire(ElevatorScene.personCountInElevator.get(key));
-				ElevatorScene.TwoD_ArrayOUT[this.key][currElevatorFloor].acquire(ElevatorScene.personCountInElevator.get(this.key));
-				
-
+				numPeopleInElevator = ElevatorScene.scene.getNumberOfPeopleInElevator(this.key);
+				ElevatorScene.TwoD_ArrayOUT[this.key][currFloorEle].acquire(numPeopleInElevator);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
+			///---- People Leaving Elevator End ----///
 	
 		}
 	}
