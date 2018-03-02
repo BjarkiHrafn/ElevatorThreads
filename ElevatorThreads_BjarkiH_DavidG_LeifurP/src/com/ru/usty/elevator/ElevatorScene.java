@@ -27,7 +27,7 @@ public class ElevatorScene {
 	 * feel free to change this.  It will be changed during grading
 	 * ekki fyrir nedan 50 milliseconds -Bjarki
 	 */ 
-	public static final int VISUALIZATION_WAIT_TIME = 300;  // Ekki fyrir nedan 50 milliseconds
+	public static final int VISUALIZATION_WAIT_TIME = 60;  // Ekki fyrir nedan 50 milliseconds
 	
 	///---- Public int -----///
 	public static int currElevatorAtFloor;
@@ -54,7 +54,7 @@ public class ElevatorScene {
 	
 	///---- Threads ----///
 	private Thread elevatorThread = null;
-	static ArrayList<Thread> elevatorThreads = null; // TODO::REMOVE, IS THIS NEEDED?
+	static ArrayList<Thread> elevatorThreads = new ArrayList<Thread>();
 	///---- Threads ----///
 	
 	
@@ -94,24 +94,17 @@ public class ElevatorScene {
 	public void restartScene(int numberOfFloors, int numberOfElevators) {
 		
 		elevatorsMayDie = true;
-		/*
+		
 		for(Thread thread: elevatorThreads) {
 			if(thread != null) {
 				if(thread.isAlive()) {	//DON'T DELETE, we will need it later
-					thread.join();
+					try {
+						thread.join();
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
 				}
 			}
-		}
-		*/
-		
-		if(elevatorThread != null) {
-			if(elevatorThread.isAlive()) {
-				try {
-					elevatorThread.join();
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
-			}	
 		}
 		
 		elevatorsMayDie = false;
@@ -197,6 +190,7 @@ public class ElevatorScene {
 		for(int i = 0; i < numberOfElevators; i++) {
 			elevatorThread = (new Thread(new Elevator(getCurrentFloorForElevator(i), getNumberOfPeopleInElevator(i), i)));
 			elevatorThread.start();
+			elevatorThreads.add(elevatorThread);
 		}	
 	}
 	

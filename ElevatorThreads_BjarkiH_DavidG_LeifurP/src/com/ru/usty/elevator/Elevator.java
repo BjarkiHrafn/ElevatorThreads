@@ -76,7 +76,7 @@ public class Elevator implements Runnable {
 				currFloorEle = ElevatorScene.getCurrentFloorForElevator(this.key);
 				numPeopleInElevator = ElevatorScene.scene.getNumberOfPeopleInElevator(this.key);
 				ElevatorScene.TwoD_ArrayOUT[this.key][currFloorEle].release(numPeopleInElevator);
-				System.out.println("Elevator.java says: number of people in elevator are" + numPeopleInElevator);
+				//System.out.println("Elevator.java says: number of people in elevator are" + numPeopleInElevator);
 			}
 
 			// Sleep time proportional to visualization wait time, to make sure persons
