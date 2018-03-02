@@ -97,6 +97,7 @@ public class ElevatorScene {
 	public static Semaphore NumberOfPeopleInElevatorMutex;
 	public static Semaphore CurrentElevatorFloorMutex;
 	public static Semaphore elevatorDirectionMutex;
+	public static Semaphore oddNumberElevatorsMutex;
 	///---- Semaphores ----///
 	
 
@@ -138,6 +139,7 @@ public class ElevatorScene {
 		NumberOfPeopleInElevatorMutex = new Semaphore(1);
 		CurrentElevatorFloorMutex = new Semaphore(1);
 		elevatorDirectionMutex = new Semaphore(1);
+		oddNumberElevatorsMutex = new Semaphore(1);
 		
 		// Semaphores
 		
