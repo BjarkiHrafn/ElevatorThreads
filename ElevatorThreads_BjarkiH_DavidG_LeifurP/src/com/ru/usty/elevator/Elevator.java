@@ -23,6 +23,14 @@ public class Elevator implements Runnable {
 			}
 			///---- Stop The Program From Running Infinitely End----///
 
+			currFloorEle = ElevatorScene.getCurrentFloorForElevator(this.key);
+			if(currFloorEle == 0) {
+				dir = true;
+			}
+			else if(currFloorEle == ElevatorScene.scene.getNumberOfFloors() - 1) {
+				dir = false;
+			}
+			
 			
 			///---- People Entering Elevator Begin ----///
 			try {
@@ -34,8 +42,18 @@ public class Elevator implements Runnable {
 			{
 				ElevatorScene.scene.updateCurrentElevator(this.key);
 				currFloorEle = ElevatorScene.getCurrentFloorForElevator(this.key);
-				spaceLeft = (6 - ElevatorScene.scene.getNumberOfPeopleInElevator(this.key));
-				ElevatorScene.inToElevatorFloorsSem.get(currFloorEle).release(spaceLeft);
+				spaceLeft = (6 - ElevatorScene.scene.getNumberOfPeopleInElevator(this.key));				
+				
+				//ElevatorScene.scene.setElevatorDirection(this.key, dir);
+				
+				if(dir) {
+					ElevatorScene.goingUpSemArr.get(currFloorEle).release(spaceLeft);
+				}else {
+					ElevatorScene.goingDownSemArr.get(currFloorEle).release(spaceLeft);
+				}
+				
+			
+				
 			}
 			
 			// Sleep time proportional to visualization wait time, to make sure persons
@@ -49,7 +67,13 @@ public class Elevator implements Runnable {
 			try {
 				currFloorEle = ElevatorScene.getCurrentFloorForElevator(this.key);
 				spaceLeft = (6 - ElevatorScene.scene.getNumberOfPeopleInElevator(this.key));
-				ElevatorScene.inToElevatorFloorsSem.get(currFloorEle).acquire(spaceLeft);
+	
+				if(dir) {
+					ElevatorScene.goingUpSemArr.get(currFloorEle).acquire(spaceLeft);
+				}else {
+					ElevatorScene.goingDownSemArr.get(currFloorEle).acquire(spaceLeft);
+				}
+				
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
@@ -64,6 +88,7 @@ public class Elevator implements Runnable {
 			 * to first floor.
 			 */
 			
+			/*
 			currFloorEle = ElevatorScene.getCurrentFloorForElevator(this.key);
 			if(currFloorEle == 0) {
 				dir = true;
@@ -71,6 +96,8 @@ public class Elevator implements Runnable {
 			else if(currFloorEle == ElevatorScene.scene.getNumberOfFloors() - 1) {
 				dir = false;
 			}
+			*/
+			
 			
 			if(dir) {
 				ElevatorScene.incrementCurrentElevatorFloor(this.key);
