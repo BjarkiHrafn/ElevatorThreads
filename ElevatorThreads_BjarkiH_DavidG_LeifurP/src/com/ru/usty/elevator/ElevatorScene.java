@@ -82,6 +82,7 @@ public class ElevatorScene {
 	static ArrayList<Semaphore> CurrentElevatorFloorMutexArr = null;
 	static ArrayList<Semaphore> personCountMutexArr = null;
 	static ArrayList<Semaphore> exitedCountMutexArr = null;
+	static ArrayList<Semaphore> WatcherOfElevatorKeyMutexArr = null;
 	
 	// Mutexes
 	public static Semaphore elevatorFloorMutex;
@@ -181,7 +182,6 @@ public class ElevatorScene {
 			}
 		}
 		
-		
 		goingUpSemArr = new ArrayList<Semaphore>();
 		for(int i = 0; i < getNumberOfFloors(); i++) {
 			goingUpSemArr.add(new Semaphore(0));
@@ -239,11 +239,14 @@ public class ElevatorScene {
 		
 		personCountMutexArr = new ArrayList<Semaphore>();
 		exitedCountMutexArr = new ArrayList<Semaphore>();
+		WatcherOfElevatorKeyMutexArr = new ArrayList<Semaphore>();
 		for(int i = 0; i < numberOfFloors; i++) {
 			personCountMutexArr.add(new Semaphore(1));
 			exitedCountMutexArr.add(new Semaphore(1));
+			WatcherOfElevatorKeyMutexArr.add(new Semaphore(1));
 		}
-
+		
+		
 
 		
 		// Start Elevator threads		

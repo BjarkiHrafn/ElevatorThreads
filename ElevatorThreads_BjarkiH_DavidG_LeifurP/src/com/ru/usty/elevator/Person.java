@@ -39,13 +39,13 @@ public class Person implements Runnable {
 		
 		///---- Person Thread Getting What Elevator They Entered Begin----///	
 		try {
-			ElevatorScene.WatcherOfElevatorKeyMutex.acquire();
+			ElevatorScene.WatcherOfElevatorKeyMutexArr.get(sourceFloor).acquire();
 		} catch (InterruptedException e2) {
 			e2.printStackTrace();
 		}
 		{
 			myElevatorKey = ElevatorScene.scene.getCurrentElevatorAtFloor(this.sourceFloor);
-			ElevatorScene.WatcherOfElevatorKeyMutex.release();
+			ElevatorScene.WatcherOfElevatorKeyMutexArr.get(sourceFloor).release();
 		}
 		///---- Person Thread Getting What Elevator They Entered End ----///	
 		

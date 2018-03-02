@@ -45,15 +45,11 @@ public class Elevator implements Runnable {
 				spaceLeft = (6 - ElevatorScene.scene.getNumberOfPeopleInElevator(this.key));				
 				
 				//ElevatorScene.scene.setElevatorDirection(this.key, dir);
-				
 				if(dir) {
 					ElevatorScene.goingUpSemArr.get(currFloorEle).release(spaceLeft);
 				}else {
 					ElevatorScene.goingDownSemArr.get(currFloorEle).release(spaceLeft);
 				}
-				
-			
-				
 			}
 			
 			// Sleep time proportional to visualization wait time, to make sure persons
@@ -81,6 +77,7 @@ public class Elevator implements Runnable {
 			///---- People Entering Elevator End ----///
 			
 
+			
 			///---- Move Elevator Begin ----///
 			/*
 			 * Move elevator to up one floor until 
