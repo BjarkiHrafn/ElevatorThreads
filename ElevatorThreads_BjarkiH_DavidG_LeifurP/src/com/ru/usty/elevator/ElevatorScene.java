@@ -2,49 +2,33 @@ package com.ru.usty.elevator;
 
 import java.util.ArrayList;
 import java.util.concurrent.Semaphore;
-import javax.sound.midi.SoundbankResource;
-
-
-/**
- * The base function definitions of this class must stay the same
- * for the test suite and graphics to use.
- * You can add functions and/or change the functionality
- * of the operations at will.
- *
- */
 
 public class ElevatorScene {
 	
-	/**
-	 * !This is where you define semaphores!
-	 * When you call this semaphore,
-	 * put the class name it's reffering to
-	 * then a dot and call it, Don't just type globalSemaphore!
-	 */
-	
-	
 	/* TO SPEED THINGS UP WHEN TESTING,
 	 * feel free to change this.  It will be changed during grading
-	 * ekki fyrir nedan 50 milliseconds -Bjarki
+	 * dont set this below 60
 	 */ 
-	public static final int VISUALIZATION_WAIT_TIME = 50;  // Ekki fyrir nedan 4 milliseconds
+	///---- Public const ----///
+	public static final int VISUALIZATION_WAIT_TIME = 500;
+	///---- Public const ----///
 	
 	///---- Public int -----///
 	public static int currElevatorAtFloor;
 	public static ArrayList<Integer> currElevatorAtFloorArr;
 	///---- Public int -----///
 	
+	///---- Public int -----///
+	public static ArrayList<Integer> elevatorsFloor = null;
+	///---- Public int -----///
+	
 	///---- Private int -----///
 	private int numberOfFloors;
 	private int numberOfElevators;
-	
-	ArrayList<Integer> personCount; //TODO::DECLARE, PUBLIC OR PRIVATE?
-	ArrayList<Integer> exitedCount = null; //TODO::DECLARE, PUBLIC OR PRIVATE?
-	static ArrayList<Integer> elevatorsFloor = null; //TODO::DECLARE, PUBLIC OR PRIVATE?
-	static ArrayList<Integer> personCountInElevator = null; //TODO::DECLARE, PUBLIC OR PRIVATE?
-	static ArrayList<Boolean> elevatorDirection = null;
-	///---- Private int -----///
-	
+	private ArrayList<Integer> personCount;
+	private ArrayList<Integer> exitedCount = null;
+	private static ArrayList<Integer> personCountInElevator = null;
+	///---- Private int -----///	
 	
 	///---- Public Booleans -----///
 	public static boolean elevatorsMayDie;
@@ -59,13 +43,11 @@ public class ElevatorScene {
 	static ArrayList<Thread> elevatorThreads = new ArrayList<Thread>();
 	///---- Threads ----///
 	
-
+	///---- Semaphores ----///
 	// Semaphores
-
 	static ArrayList<Semaphore> goingUpSemArr = null;
 	static ArrayList<Semaphore> goingDownSemArr = null;
 	static Semaphore[][] outOfElevatorSemTwoDemArr = null;
-
 	// Mutex arrays
 	static ArrayList<Semaphore> elevatorFloorMutexArr = null;
 	static ArrayList<Semaphore> elevaitorPersonCountMutexArr = null;
@@ -75,13 +57,11 @@ public class ElevatorScene {
 	static ArrayList<Semaphore> personCountMutexArr = null;
 	static ArrayList<Semaphore> exitedCountMutexArr = null;
 	static ArrayList<Semaphore> watcherOfElevatorKeyMutexArr = null;
-	
 	// Mutexes
 	static Semaphore oddNumberElevatorsMutex;
 	///---- Semaphores ----///
 	
-
-	// TODO::SET UNDER BASE FUNCTIONS WHEN PROJECT IS FINISHED
+	
 	// Base function: definition must not change, but add your code
 	public void restartScene(int numberOfFloors, int numberOfElevators) {
 		
@@ -100,8 +80,7 @@ public class ElevatorScene {
 		}
 		
 		elevatorsMayDie = false;
-		scene = this;
-		// TODO::USED FUNCTIONS INSTEAD
+		scene = this;		
 		this.numberOfFloors = numberOfFloors;
 		this.numberOfElevators = numberOfElevators;	
 		
@@ -110,13 +89,13 @@ public class ElevatorScene {
 		//elevaitorPersonCountMutex2 = new Semaphore(1);
 		oddNumberElevatorsMutex = new Semaphore(1);
 		
-		// Semaphore arrays
-
+		
+		
+		// Semaphore arrays initialization
 		personCount = new ArrayList<Integer>();
-		for(int i = 0; i < numberOfFloors; i++) {
+		for(int i = 0; i < getNumberOfFloors(); i++) {
 			this.personCount.add(0);
 		}
-
 		if(exitedCount == null) {
 			exitedCount = new ArrayList<Integer>();
 		}
@@ -129,48 +108,28 @@ public class ElevatorScene {
 		
 		
 		elevatorsFloor = new ArrayList<Integer>();
-		for(int i = 0; i < getNumberOfElevators(); i++) {
-			elevatorsFloor.add(0);
-		}
-		
 		personCountInElevator = new ArrayList<Integer>();
-		for(int i = 0; i < getNumberOfElevators(); i++) {
-			personCountInElevator.add(0);
-		}
-		
-		elevatorDirection = new ArrayList<Boolean>();
-		for(int i = 0; i < getNumberOfElevators(); i++) {
-			elevatorDirection.add(true);
-		}
-
 		outOfElevatorSemTwoDemArr = new Semaphore[getNumberOfElevators()][getNumberOfFloors()];
 		for(int i = 0; i < getNumberOfElevators(); i++) {
+			elevatorsFloor.add(0);
+			personCountInElevator.add(0);
 			for(int j = 0; j < getNumberOfFloors(); j++) {
 				outOfElevatorSemTwoDemArr[i][j] = new Semaphore(0);
-			}
+			}		
 		}
 		
 		goingUpSemArr = new ArrayList<Semaphore>();
+		goingDownSemArr = new ArrayList<Semaphore>();
+		currElevatorAtFloorArr = new ArrayList<Integer>(); 
 		for(int i = 0; i < getNumberOfFloors(); i++) {
 			goingUpSemArr.add(new Semaphore(0));
-		}
-		
-		goingDownSemArr = new ArrayList<Semaphore>();
-		for(int i = 0; i < getNumberOfFloors(); i++) {
 			goingDownSemArr.add(new Semaphore(0));
-		}
-		
-		currElevatorAtFloorArr = new ArrayList<Integer>(); 
-		for(int i = 0; i < numberOfFloors; i++) 
-		{
-			// if this is not updated it should crash
 			currElevatorAtFloorArr.add(0);
 		}
 		
 		
-		// mutex arr initalization
+		// Mutex arrays initialization
 		elevaitorPersonCountMutexArr = new ArrayList<Semaphore>();
-		
 		elevaitorPersonCountMutexArr = new ArrayList<Semaphore>();
 		numberOfPeopleInElevatorMutexArr = new ArrayList<Semaphore>();
 		elevatorDirectionMutexArr = new ArrayList<Semaphore>();
@@ -186,7 +145,7 @@ public class ElevatorScene {
 		personCountMutexArr = new ArrayList<Semaphore>();
 		exitedCountMutexArr = new ArrayList<Semaphore>();
 		watcherOfElevatorKeyMutexArr = new ArrayList<Semaphore>();
-		for(int i = 0; i < numberOfFloors; i++) {
+		for(int i = 0; i < getNumberOfFloors(); i++) {
 			elevatorFloorMutexArr.add(new Semaphore(1));
 			personCountMutexArr.add(new Semaphore(1));
 			exitedCountMutexArr.add(new Semaphore(1));
@@ -194,8 +153,8 @@ public class ElevatorScene {
 		}
 				
 		// Start Elevator threads		
-		for(int i = 0; i < numberOfElevators; i++) {
-			elevatorThread = (new Thread(new Elevator(getCurrentFloorForElevator(i), getNumberOfPeopleInElevator(i), i)));
+		for(int i = 0; i < getNumberOfElevators(); i++) {
+			elevatorThread = (new Thread(new Elevator(i)));
 			elevatorThread.start();
 			elevatorThreads.add(elevatorThread);
 		}	
@@ -223,10 +182,8 @@ public class ElevatorScene {
 				personCountInElevator.set(elevator, personCountInElevator.get(elevator)-1);
 			numberOfPeopleInElevatorMutexArr.get(elevator).release();
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
-		
+		}	
 	}
 	
 	public void setCurrentElevatorAtFloor(int floor, int key) {		
@@ -235,7 +192,6 @@ public class ElevatorScene {
 				currElevatorAtFloorArr.set(floor, key);
 			currentElevatorFloorMutexArr.get(key).release();
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}	
 	}
@@ -253,7 +209,6 @@ public class ElevatorScene {
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
-       
     }
     
     // Decrements current elevator by 1 floor 
@@ -265,14 +220,12 @@ public class ElevatorScene {
 		    	currentElevatorFloorMutexArr.get(elevator).release();
 			} catch (InterruptedException e) {
 				e.printStackTrace();
-			}
-	    	
+			} 	
     }
 
 
 	// Decrement number of people waiting at floor by one, by current floor
 	public void decrementNumberOfPeopleWaitingAtFloor(int floor) {
-	
 		try {
 			personCountMutexArr.get(floor).acquire();
 				personCount.set(floor, (personCount.get(floor) -1));
@@ -284,7 +237,6 @@ public class ElevatorScene {
 
 	// Increment number of people waiting at floor by one, by current floor
 	public void incrementNumberOfPeopleWaitingAtFloor(int floor) {
-		
 		try {
 			personCountMutexArr.get(floor).acquire();
 				personCount.set(floor, (personCount.get(floor) +1));
@@ -302,23 +254,11 @@ public class ElevatorScene {
 	// Base function: definition must not change
 	// Necessary to add your code in this one
 	public Thread addPerson(int sourceFloor, int destinationFloor) {
-		// Go take a look at the person class when you want to add
-		// sourceFloor and destinationFloor into the thread
 		Thread thread = new Thread(new Person(sourceFloor, destinationFloor));
 		thread.start();
-		/**
-		 * Important to add code here to make a
-		 * new thread that runs your person-runnable
-		 * 
-		 * Also return the Thread object for your person
-		 * so that it can be reaped in the testSuite
-		 * (you don't have to join() yourself)
-		 */
-
 		incrementNumberOfPeopleWaitingAtFloor(sourceFloor);
 		
-		return thread;  //this means that the testSuite will not wait for the threads to finish
-		//were returning the thread for the base system that will clean up after us - Bjarki
+		return thread;
 	}
 
 	// Base function: definition must not change, but add your code

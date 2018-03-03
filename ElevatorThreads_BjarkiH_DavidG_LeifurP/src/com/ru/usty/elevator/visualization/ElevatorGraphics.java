@@ -3,7 +3,6 @@ package com.ru.usty.elevator.visualization;
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL11;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.utils.BufferUtils;
 import com.ru.usty.elevator.ElevatorScene;
 
@@ -71,7 +70,7 @@ public class ElevatorGraphics implements ApplicationListener{
 				Gdx.gl11.glScalef(70.0f, 100.0f, 100.0f);
 				Gdx.gl11.glDrawArrays(GL11.GL_TRIANGLE_STRIP, 0, 4);
 				Gdx.gl11.glPopMatrix();
-				if(floorNum == elevatorScene.getCurrentFloorForElevator(elevatorNum)) {
+				if(floorNum == ElevatorScene.getCurrentFloorForElevator(elevatorNum)) {
 
 					if(elevatorScene.isElevatorOpen(elevatorNum)) {
 						Gdx.gl11.glColor4f(0.8f, 0.8f, 1.0f, 1.0f);
