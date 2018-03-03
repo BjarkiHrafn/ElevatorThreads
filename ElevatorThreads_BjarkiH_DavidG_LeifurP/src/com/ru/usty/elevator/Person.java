@@ -16,7 +16,6 @@ public class Person implements Runnable {
 	public void run() {
 		
 		try {
-			//ElevatorScene.elevatorWaitMutex.acquire();
 				// Going up
 				if(sourceFloor < destinationFloor) {
 					ElevatorScene.goingUpSemArr.get(sourceFloor).acquire();
@@ -29,11 +28,7 @@ public class Person implements Runnable {
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
-		// Alternative code
-			//ElevatorScene.elevatorWaitMutexArr.get(sourceFloor).acquire();
-			//ElevatorScene.elevatorWaitMutex.acquire();
-			//ElevatorScene.elevatorWaitMutexArr.get(sourceFloor).release();
-			//ElevatorScene.elevatorWaitMutex.release();
+
 		///---- People Waiting On Floor Semaphore For Elevator End----///	
 		
 		
@@ -56,9 +51,6 @@ public class Person implements Runnable {
 			//System.out.println("Person.java says that people are going into elevator");
 			ElevatorScene.scene.incrementNumberOfPeopleInElevator(myElevatorKey);
 		}
-		// Alternative code
-			//ElevatorScene.elevaitorPersonCountMutex.acquire();
-			//ElevatorScene.elevaitorPersonCountMutex.release();
 		///---- People Entering Elevator End----///
 		
 		
@@ -83,21 +75,3 @@ public class Person implements Runnable {
 		///---- People Leaving Elevator End ----///
 	}
 }
-
-
-/*
-// People leaving elevator, mutex used to go in one by one
-// ----
-try {
-	ElevatorScene.elevatorWaitMutexArr2.get(myElevator).acquire();
-	//ElevatorScene.elevaitorPersonCountMutex2.acquire();
-		ElevatorScene.personCountInElevator.set(myElevator, ElevatorScene.personCountInElevator.get(myElevator)-1);
-		System.out.println("people in elevator" + ElevatorScene.personCountInElevator.get(myElevator));
-		System.out.println("destination floor: " + destinationFloor);
-		ElevatorScene.scene.personExitsAtFloor(destinationFloor); // exits at destination floor add parameter
-	//ElevatorScene.elevaitorPersonCountMutex2.release();
-	ElevatorScene.elevatorWaitMutexArr2.get(myElevator).release();
-} catch (InterruptedException e) {
-	e.printStackTrace();
-}*/
-// ----

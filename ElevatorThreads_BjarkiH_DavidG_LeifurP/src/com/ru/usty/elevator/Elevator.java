@@ -79,21 +79,7 @@ public class Elevator implements Runnable {
 			///---- People Entering Elevator End ----///
 			
 			///---- Move Elevator Begin ----///
-			/*
-			 * Move elevator to up one floor until 
-			 * final floor is reached, then reset elevator 
-			 * to first floor.
-			 */
-			
-			/*
-			currFloorEle = ElevatorScene.getCurrentFloorForElevator(this.key);
-			if(currFloorEle == 0) {
-				dir = true;
-			}
-			else if(currFloorEle == ElevatorScene.scene.getNumberOfFloors() - 1) {
-				dir = false;
-			}
-			*/
+		
 			
 			if(dir) {
 				ElevatorScene.scene.incrementCurrentElevatorFloor(this.key);
@@ -101,12 +87,7 @@ public class Elevator implements Runnable {
 				ElevatorScene.scene.decrementCurrentElevatorFloor(this.key);
 			}
 					
-			/*
-			if(ElevatorScene.getCurrentFloorForElevator(this.key) < ElevatorScene.scene.getNumberOfFloors() - 1) {
-				ElevatorScene.incrementCurrentElevatorFloor(this.key);
-			}else {
-				ElevatorScene.scene.setCurrentElevatorToFirstFloor(this.key);				
-			}*/
+
 			///---- Move Elevator End ----///
 			
 			
