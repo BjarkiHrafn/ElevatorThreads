@@ -45,8 +45,7 @@ public class Elevator implements Runnable {
 				ElevatorScene.scene.setCurrentElevatorAtFloor(ElevatorScene.getCurrentFloorForElevator(this.key), this.key);
 				currFloorEle = ElevatorScene.getCurrentFloorForElevator(this.key);
 				spaceLeft = (6 - ElevatorScene.scene.getNumberOfPeopleInElevator(this.key));				
-				
-				//ElevatorScene.scene.setElevatorDirection(this.key, dir);
+
 				if(dir) {
 					ElevatorScene.goingUpSemArr.get(currFloorEle).release(spaceLeft);
 				}else {
@@ -96,7 +95,7 @@ public class Elevator implements Runnable {
 			{
 				currFloorEle = ElevatorScene.getCurrentFloorForElevator(this.key);
 				numPeopleInElevator = ElevatorScene.scene.getNumberOfPeopleInElevator(this.key);
-				ElevatorScene.TwoD_ArrayOUT[this.key][currFloorEle].release(numPeopleInElevator);
+				ElevatorScene.outOfElevatorSemTwoDemArr[this.key][currFloorEle].release(numPeopleInElevator);
 				//System.out.println("Elevator.java says: number of people in elevator are" + numPeopleInElevator);
 			}
 
@@ -111,7 +110,7 @@ public class Elevator implements Runnable {
 			// Acquire permits back before next step
 			try {
 				numPeopleInElevator = ElevatorScene.scene.getNumberOfPeopleInElevator(this.key);
-				ElevatorScene.TwoD_ArrayOUT[this.key][currFloorEle].acquire(numPeopleInElevator);
+				ElevatorScene.outOfElevatorSemTwoDemArr[this.key][currFloorEle].acquire(numPeopleInElevator);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
@@ -125,7 +124,6 @@ public class Elevator implements Runnable {
 						
 						if(this.key %2 != 0) {
 							topCounterServicer++;
-							System.out.println("topCounterServicer is: " + topCounterServicer);
 							ElevatorScene.elevatorsFloor.set(this.key, topCounterServicer);
 						}
 					} catch (InterruptedException e) {
@@ -147,7 +145,6 @@ public class Elevator implements Runnable {
 						
 						if(this.key %2 != 0) {
 							bottomCounterService--;
-							System.out.println("bottomCounterServicer is: " + bottomCounterService);
 							ElevatorScene.elevatorsFloor.set(this.key, bottomCounterService);
 						}
 					} catch (InterruptedException e) {

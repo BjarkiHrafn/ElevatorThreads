@@ -16,6 +16,7 @@ public class Person implements Runnable {
 	public void run() {
 		
 		try {
+	
 				// Going up
 				if(sourceFloor < destinationFloor) {
 					ElevatorScene.goingUpSemArr.get(sourceFloor).acquire();
@@ -34,13 +35,13 @@ public class Person implements Runnable {
 		
 		///---- Person Thread Getting What Elevator They Entered Begin----///	
 		try {
-			ElevatorScene.WatcherOfElevatorKeyMutexArr.get(sourceFloor).acquire();
+			ElevatorScene.watcherOfElevatorKeyMutexArr.get(sourceFloor).acquire();
 		} catch (InterruptedException e2) {
 			e2.printStackTrace();
 		}
 		{
 			myElevatorKey = ElevatorScene.scene.getCurrentElevatorAtFloor(this.sourceFloor);
-			ElevatorScene.WatcherOfElevatorKeyMutexArr.get(sourceFloor).release();
+			ElevatorScene.watcherOfElevatorKeyMutexArr.get(sourceFloor).release();
 		}
 		///---- Person Thread Getting What Elevator They Entered End ----///	
 		
@@ -56,7 +57,7 @@ public class Person implements Runnable {
 		
 		///---- People Waiting In Elevator&Floor Semaphore, For Leaving Elevator Begin----///	
 		try {
-			ElevatorScene.TwoD_ArrayOUT[myElevatorKey][destinationFloor].acquire();
+			ElevatorScene.outOfElevatorSemTwoDemArr[myElevatorKey][destinationFloor].acquire();
 			
 			// Alternative code
 				//ElevatorScene.outOfElevatorFloorsSem.get(destinationFloor).acquire();
